@@ -1,0 +1,83 @@
+[tool] Creating task list: Implement task 2 of consent-and-control spec in Memory Lane
+[tool] status: Completed
+[tool] Reading requirements.md:1, design.md:1, tasks.md:1
+[tool] status: Completed
+[tool] Reading store.py:1, service.py:1
+[tool] status: Completed
+[tool] Completing #1
+[tool] status: Completed
+[tool] Reading main.py:1, family.html:1-100
+[tool] status: Completed
+[tool] Reading family.html:101-400
+[tool] status: Completed
+[tool] Reading family.html:301-400, test_app.py:1
+[tool] status: Completed
+[tool] Completing #2, #3
+[tool] status: Completed
+Now I have everything I need. Let me implement task 2 across all four files.
+
+**1. Add pause helpers to `app/service.py`**
+[tool] Editing service.py
+[tool] status: Completed
+**2. Add pause/resume routes to `app/main.py`**
+[tool] Editing main.py
+[tool] status: Completed
+**3. Add pause UI section to `web/family.html`**
+
+I need to add:
+- CSS for the pause section
+- An HTML `<section>` in the sidebar between "Recording tools" and the end
+- JS to load and render pause state, and handle button clicks
+[tool] Editing family.html
+[tool] status: Completed
+[tool] Editing family.html
+[tool] status: Completed
+Now I need to add JS to update the pause status display and wire up the three buttons. Let me find where `chips()` renders health data and where the click handler ends, so I can add the pause state rendering there.
+[tool] Searching for 'function chips|paused_until|id="resume"|data-resume|pause...' in family.html
+[tool] status: Completed
+[tool] Reading family.html:209-268
+[tool] status: Completed
+[tool] Reading family.html:401-460
+[tool] status: Completed
+Now I'll add the `pauseState()` render function to `chips()` (since `loadHealth` calls `chips()`), and wire the three buttons in the click handler:
+[tool] Editing family.html
+[tool] status: Completed
+Now add the three button handlers in the click event listener:
+[tool] Editing family.html
+[tool] status: Completed
+**4. Add tests to `tests/test_app.py`**
+[tool] Editing test_app.py
+[tool] status: Completed
+**5. Mark task 2 done in tasks.md**
+[tool] Editing tasks.md
+[tool] status: Completed
+Let me do a quick sanity-check on the service.py changes to make sure imports are fine — `timedelta` and `datetime` were already imported at the top:
+[tool] Searching for '^from datetime|^import datetime' in service.py
+[tool] status: Completed
+Good. Let me also verify the pause methods landed in the right place (before `stats()`):
+[tool] Searching for 'def pause|def resume|def paused_at|def pause_state|paused...' in service.py
+[tool] status: Completed
+[tool] Searching for 'api/pause|api/resume|class Pause' in main.py
+[tool] status: Completed
+[tool] Searching for 'def test_pause|def test_resume|def test_paused' in test_app.py
+[tool] status: Completed
+[tool] Completing #4, #5
+[tool] status: Completed
+Done. Here's what changed for task 2:
+
+**`app/service.py`** — added five methods to `MemoryLane`:
+- `_load_pauses()` / `_save_pauses()` — read/write the `pauses` JSON list from the `settings` table
+- `pause(minutes, until)` — add a pause window; supports `minutes=60` or `until="tomorrow"` (midnight next day in the configured TZ)
+- `resume()` — close any active pause by setting its `end_ms` to now
+- `paused_at(ms)` — returns `True` if the given timestamp falls inside any stored pause window
+- `pause_state()` — returns `{paused, paused_until_ms, paused_until}` (the ISO string is what the UI shows)
+
+`status()` was updated to include `"paused_until"`.
+
+**`app/main.py`** — added `Pause` Pydantic model and two routes: `POST /api/pause` and `POST /api/resume`.
+
+**`web/family.html`** — added a "Pause Memory Lane" card to the sidebar with three buttons (Pause for 1 hour, Pause until tomorrow, Resume) and a status line that shows "⏸ Paused until …" in red when active, updated by `renderPause()` which is called from `chips()` after every `loadHealth()`.
+
+**`tests/test_app.py`** — 10 new tests covering: pause-for-minutes, pause-until-tomorrow, resume, `paused_at` inside/outside/after resume, persistence across restarts, `status()` field, invalid args, and both HTTP routes.
+
+**`.kiro/specs/consent-and-control/tasks.md`** — `[ ] 2.` → `[x] 2.`

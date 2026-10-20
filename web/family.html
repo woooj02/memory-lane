@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory Lane · Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap">
+<style>
+/* Family page: a daily ledger of what Bee heard, what it became, and how
+   practice went. The original line always sits beside its English. */
+:root{
+  --bg:#f4f5f8; --panel:#ffffff; --ink:#18203a; --muted:#5b6582; --dim:#8a93ab; --line:#dfe3ec; --soft:#eef1f6;
+  --marigold:#b86e00; --marigold-bg:#f3a833; --marigold-soft:#fff1d9; --leaf:#22825a; --leaf-soft:#e1f3ea;
+  --rhodo:#c23a44; --rhodo-soft:#fbe6e7; --hi:#fff3c4;
+  color-scheme:light;
+  --f:"Mukta","Noto Sans Devanagari",system-ui,sans-serif; --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:20px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right)) 64px max(16px,env(safe-area-inset-left));display:grid;gap:18px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+h1{margin:0;font-size:40px;font-weight:800;line-height:1.1}
+h1 span{color:var(--marigold)}
+.sub{margin:4px 0 0;color:var(--muted);max-width:70ch}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{font-size:14px;font-weight:600;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.chip.ok{background:var(--leaf-soft);color:var(--leaf);border-color:transparent}
+.chip.warn{background:var(--marigold-soft);color:var(--marigold);border-color:transparent}
+.chip.bad{background:var(--rhodo-soft);color:var(--rhodo);border-color:transparent}
+.btn{font:inherit;font-size:17px;font-weight:700;border-radius:10px;padding:7px 14px;border:1px solid var(--marigold-bg);background:var(--marigold-bg);color:#1d1305;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.small{font-size:13px;padding:4px 10px}
+.btn.danger{background:transparent;color:var(--rhodo);border-color:var(--rhodo)}
+.btn:disabled{opacity:.55;cursor:default}
+:focus-visible{outline:2px solid var(--marigold-bg);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:18px;align-items:start}
+@media (max-width:960px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:14px;min-width:0}
+h2{margin:0;font-size:22px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h2 small{font-size:14px;font-weight:500;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:12px;min-width:0}
+.review{border-color:var(--marigold-bg);box-shadow:0 0 0 3px var(--marigold-soft)}
+.review .item{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.review .item:first-of-type{border-top:0;padding-top:0}
+.review .quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.review .quote{font-size:17px}
+.conv-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:16px;font-weight:600}
+.title{font-size:24px;font-weight:700;line-height:1.3}
+.title .ne{display:block;font-size:15px;font-weight:500;color:var(--muted)}
+.people{display:flex;gap:6px;flex-wrap:wrap}
+.summary{margin:0;max-width:75ch}
+.switch{display:flex;gap:6px;align-items:center;font-size:16px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.qa{display:grid;gap:8px}
+.q-item{border-left:4px solid var(--marigold-bg);padding:6px 10px;display:grid;gap:2px;background:var(--soft);border-radius:0 10px 10px 0}
+.q-item.health{border-color:var(--rhodo)}
+.q-item.pending{opacity:.75;border-left-style:dashed}
+.q-item .q{font-weight:700}
+.q-item .ne{color:var(--muted);font-size:17px}
+.q-item .a b{font-weight:600}
+.meta{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:15px;color:var(--muted);flex-wrap:wrap}
+.lines{display:inline-flex;gap:4px;flex-wrap:wrap;align-items:center}
+.lineref{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:0 7px;cursor:pointer}
+.linkish{font:inherit;font-size:15px;background:none;border:0;color:var(--rhodo);cursor:pointer;padding:0;text-decoration:underline}
+details>summary{cursor:pointer;color:var(--muted);font-size:14px;font-weight:600;list-style-position:outside}
+.tx{overflow-x:auto;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:18px;min-width:560px}
+td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+td.n,td.t{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums;width:1%}
+td.s{white-space:nowrap;color:var(--muted);font-weight:600;width:1%}
+tr.parent td.s{color:var(--marigold)}
+td.o{font-size:19px;width:45%}
+tr.hl td{background:var(--hi)}
+@media (prefers-reduced-motion:no-preference){tr.hl td{transition:background 1.5s}}
+.quote{background:var(--soft);border-radius:10px;padding:8px 10px;display:grid;gap:2px;align-content:start}
+.quote .who{font-size:14px;color:var(--muted);font-weight:600}
+.quote .tr{font-size:16px;color:var(--muted)}
+.badge{font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;background:var(--soft);color:var(--muted)}
+.badge.err{background:var(--rhodo-soft);color:var(--rhodo)}
+#live{max-height:330px;overflow:auto;display:grid;gap:10px;align-content:start}
+.utt{display:grid;gap:1px;border-left:3px solid var(--line);padding-left:10px}
+.utt.new{border-color:var(--marigold-bg)}
+.utt .who{color:var(--dim);font-size:14px;font-variant-numeric:tabular-nums}
+.utt .o{font-size:20px}
+.utt .en{font-size:18px;color:var(--muted)}
+.utt .en.wait{color:var(--dim);font-style:italic}
+.heard{display:block;font-size:13px;color:var(--dim)}
+.utt.bg,tr.bg{opacity:.45}
+@media (prefers-reduced-motion:no-preference){.utt{animation:slide .4s ease both}@keyframes slide{from{opacity:0;transform:translateY(-6px)}}}
+.dotsrow{display:flex;gap:8px;flex-wrap:wrap}
+.dotsrow i{width:14px;height:14px;border-radius:50%;background:var(--line)}
+.dotsrow i.remembered{background:var(--leaf)} .dotsrow i.hint{background:var(--marigold-bg)} .dotsrow i.forgot{background:var(--rhodo)}
+.stat{display:flex;gap:20px;flex-wrap:wrap}
+.stat div b{display:block;font-size:26px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat div span{font-size:14px;color:var(--muted)}
+.bars{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:110px;border-bottom:1px solid var(--line)}
+.barc{display:flex;flex-direction:column-reverse;height:100%}
+.barc i{display:block}
+.barc i:last-child{border-radius:3px 3px 0 0}
+.barc .r{background:var(--leaf)} .barc .h{background:var(--marigold-bg)} .barc .f{background:var(--rhodo)}
+.axis{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;font-size:12px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:12px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.promise{display:grid;gap:4px;border-top:1px solid var(--line);padding-top:10px}
+.promise:first-child{border-top:0;padding-top:0}
+.promise .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.empty{color:var(--muted);font-size:17px;margin:0}
+.progress{height:6px;background:var(--soft);border-radius:999px;overflow:hidden;width:160px}
+.progress i{display:block;height:100%;background:var(--marigold-bg);transition:width .4s}
+.tools{border-style:dashed}
+.thumb{width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line);float:right;margin-left:10px}
+.voicebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.voicebar audio{height:32px;max-width:220px}
+.btn.rec{background:var(--rhodo);border-color:var(--rhodo);color:#fff}
+.remind{border:2px solid var(--leaf);background:var(--leaf-soft);border-radius:12px;padding:8px 12px;display:grid;gap:2px}
+.remind b{color:var(--leaf)}
+.remind .small{font-size:15px;color:var(--muted)}
+.remind.undone{opacity:.55;border-style:dashed}
+/* A 4K screen where the browser doesn't scale (common on Linux) lays this out at 3840 CSS px: scale it up. */
+@media (min-width:2400px){body{zoom:1.8}}
+@media (min-width:1800px) and (max-width:2399px){body{zoom:1.3}}
+.pause-status{font-size:16px;color:var(--muted);margin:0}
+.pause-status.active{color:var(--rhodo);font-weight:600}
+.del-confirm{background:var(--rhodo-soft);border:1px solid var(--rhodo);border-radius:10px;padding:10px 14px;display:grid;gap:6px;font-size:16px}
+.del-confirm p{margin:0;color:var(--rhodo);font-weight:600}
+.del-confirm small{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Memory Lane <span>· Family</span></h1>
+      <p class="sub" id="sub">What Bee heard today, the questions it became, and how practice is going.</p>
+      <p class="sub" style="font-size:15px;margin-top:4px">Recording with Bee · <a href="/notice" target="_blank" rel="noopener" style="color:var(--marigold)">tell the people she talks to</a></p>
+    </div>
+    <div class="bar" id="chips"></div>
+  </header>
+  <div class="bar">
+    <button class="btn" id="sync">Sync from Bee</button>
+    <span id="syncstate" class="bar"></span>
+    <a class="btn ghost" href="/notice" target="_blank" rel="noopener">Show visitors the notice ↗</a>
+    <a class="btn ghost" href="/?lang=both" target="_blank" rel="noopener">Open the evening screen ↗</a>
+    <a class="btn ghost" href="/how" target="_blank" rel="noopener">How it works ↗</a>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <section class="card review" id="pending" hidden aria-live="polite"></section>
+      <h2 id="dayh">Today</h2>
+      <div class="col" id="day"><p class="empty">Loading…</p></div>
+    </div>
+    <aside class="col">
+      <section class="card">
+        <div class="conv-head"><h2>Heard just now</h2><span class="chip" id="livechip">connecting</span></div>
+        <div id="livepins" style="display:grid;gap:8px"></div>
+        <div id="live"><p class="empty">New lines appear here while she talks, with the English a moment later.</p></div>
+      </section>
+      <section class="card">
+        <h2>Tonight's practice</h2>
+        <div class="dotsrow" id="dots"></div>
+        <div class="stat" id="tonight"></div>
+      </section>
+      <section class="card">
+        <h2>Last 14 days <small id="rate"></small></h2>
+        <div class="bars" id="bars"></div>
+        <div class="axis" id="axis"></div>
+        <div class="legend"><span><i style="background:var(--leaf)"></i>remembered</span><span><i style="background:var(--marigold-bg)"></i>with a hint</span><span><i style="background:var(--rhodo)"></i>forgot</span></div>
+      </section>
+      <section class="card" id="factsbox" hidden>
+        <h2>Teach Bee about her <small>lasting facts, saved to Bee's memory</small></h2>
+        <div id="facts"></div>
+      </section>
+      <section class="card">
+        <h2>Promises</h2>
+        <div id="reminders" style="display:grid;gap:8px"></div>
+        <div id="promises"><p class="empty">Things people say they'll do show up here.</p></div>
+      </section>
+      <section class="card tools">
+        <h2>Recording tools</h2>
+        <div class="bar">
+          <button class="btn ghost small" id="reset">Reset tonight's practice</button>
+          <span id="replay" class="bar"></span>
+        </div>
+        <p class="empty">Reset undoes tonight's answers so the evening can be recorded again.</p>
+      </section>
+      <section class="card" id="pausebox">
+        <h2>Pause Memory Lane</h2>
+        <div class="bar">
+          <button class="btn ghost small" id="pause1h">Pause for 1 hour</button>
+          <button class="btn ghost small" id="pausetom">Pause until tomorrow</button>
+          <button class="btn ghost small" id="resume">Resume</button>
+        </div>
+        <p class="pause-status" id="pausestatus">Not paused.</p>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const api = async (path, opts = {}) => {
+  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail || `HTTP ${res.status}`);
+  return body;
+};
+const KIND = { person: "Person", plan: "Plan", instruction: "Instruction", place: "Place", detail: "Detail", promise: "Promise", photo: "Photo" };
+let health = null, dayData = null, polling = null;
+
+function chips(){
+  const bee = health.bee === "cli" ? ["ok", "Bee: live account"] : ["warn", "Bee: sample day"];
+  const ai = { together: ["ok", `Together AI · ${health.model}`], anthropic: ["ok", `Claude · ${health.model}`], bedrock: ["ok", `Claude on Bedrock · ${health.model}`],
+               mock: ["warn", "AI: offline samples"] }[health.ai] || ["", health.ai];
+  const last = health.last_sync ? `Synced ${new Date(health.last_sync.at).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}` : "Not synced yet";
+  document.getElementById("chips").innerHTML =
+    `<span class="chip ${bee[0]}">${bee[1]}</span><span class="chip ${ai[0]}">${esc(ai[1])}</span><span class="chip">${last}</span>`;
+  document.getElementById("sub").textContent =
+    `What Bee heard today for ${health.parent}, the questions it became, and how practice is going.`;
+  renderPause();
+}
+
+function renderPause(){
+  const el = document.getElementById("pausestatus");
+  if (!el) return;
+  if (health.paused_until) {
+    const until = new Date(health.paused_until).toLocaleString([], {weekday:"short", hour:"numeric", minute:"2-digit"});
+    el.textContent = `⏸ Paused until ${until}.`;
+    el.className = "pause-status active";
+  } else {
+    el.textContent = "Not paused.";
+    el.className = "pause-status";
+  }
+}
+
+async function loadHealth(){ health = await api("/api/health"); chips(); syncState(); }
+
+function syncState(){
+  const s = health.sync, box = document.getElementById("syncstate"), btn = document.getElementById("sync");
+  if (s.running) {
+    btn.disabled = true; btn.textContent = "Syncing…";
+    const pct = s.total ? Math.round(100 * s.done / s.total) : 5;
+    box.innerHTML = `<span class="progress"><i style="width:${pct}%"></i></span><span class="chip">${s.total ? `Conversation ${Math.min(s.done + 1, s.total)} of ${s.total}` : "Reading Bee"}</span>`;
+    if (!polling) polling = setInterval(tick, 1500);
+  } else {
+    btn.disabled = false; btn.textContent = "Sync from Bee";
+    if (polling) { clearInterval(polling); polling = null; refresh(); }
+    const r = s.report;
+    box.innerHTML = r ? `<span class="chip ${r.errors.length ? "bad" : "ok"}">${r.digested} new · ${r.skipped} too short${r.errors.length ? ` · ${r.errors.length} failed: ${esc(r.errors[0])}` : ""}</span>` : "";
+  }
+}
+async function tick(){ try { await loadHealth(); if (health.sync.running) await loadDay(); } catch (e) {} }
+
+function nameOf(c, label){
+  const s = (c.speakers || []).find((x) => x.label === label);
+  return s ? s.name_en : label;
+}
+
+// Bee writes her Nepali with its Hindi recognizer; show what it wrote under the rebuilt line, so anyone can check it.
+const heardHTML = (l) => l.heard && l.heard !== l.text ? `<span class="heard" lang="hi">Bee heard: ${esc(l.heard)}</span>` : "";
+function convHTML(c){
+  const status = c.status === "skipped" ? `<span class="badge">Not used: ${esc(c.error)}</span>`
+    : c.status === "waiting" ? `<span class="badge">Waiting to be read and translated</span>`
+    : c.status === "error" ? `<span class="badge err">The AI step failed: ${esc(c.error)}. Sync again to retry.</span>` : "";
+  const people = (c.speakers || []).map((s) => `<span class="chip${s.is_parent ? " warn" : ""}">${esc(s.name_en)}</span>`).join("");
+  const rows = c.lines.map((l) => `<tr id="l${c.id}-${l.i}" class="${l.is_parent ? "parent" : ""}${l.background ? " bg" : ""}"><td class="n">${l.i}</td><td class="t">${esc(l.at)}</td>
+      <td class="s">${esc(l.name || l.speaker)}</td><td class="o" lang="${esc(c.language || "ne")}">${esc(l.text)}${heardHTML(l)}</td><td>${l.background ? `<span class="badge">TV / background</span> ` : ""}${l.en === l.text ? `<span style="color:var(--dim)">same</span>` : esc(l.en)}</td></tr>`).join("");
+  const cards = c.cards.map((k) => `<div class="q-item${k.health ? " health" : ""}${k.status === "pending" ? " pending" : ""}">
+      ${k.media && k.media.photo ? `<img class="thumb" src="/media/photos/${esc(k.media.photo)}" alt="Photo from her phone">` : ""}
+      <span class="q">${esc(k.question_en)}</span><span class="ne">${esc(k.question_parent)}</span>
+      <span class="a">→ <b>${esc(k.answer_en)}</b> <span class="ne">· ${esc(k.answer_parent)}</span></span>
+      <span class="meta"><span class="lines">${esc(KIND[k.kind] || k.kind)}${k.health ? " · health" : ""}${k.status === "pending" ? " · waiting for your OK" : ` · next asked ${esc(k.due)}`} · from
+        ${k.evidence.map((i) => `<button class="lineref" data-conv="${c.id}" data-line="${i}" title="Show this line">line ${i}</button>`).join("")}</span>
+        <button class="linkish" data-del="${k.id}">Remove</button></span>
+      <span class="voicebar">${k.voice ? `<audio controls preload="none" src="/media/voice/${esc(k.voice)}"></audio><button class="linkish" data-unvoice="${k.id}">Remove recording</button>`
+        : `<button class="btn ghost small" data-rec="${k.id}" title="She hears the question in your voice">🎙 Ask it in your voice</button>`}</span></div>`).join("");
+  return `<article class="card" id="c${c.id}">
+    <div class="conv-head">
+      <div><span class="time">${esc(c.start)}–${esc(c.end)}</span>
+        <div class="title">${esc(c.title_en)}${c.title_parent && c.title_parent !== c.title_en ? `<span class="ne">${esc(c.title_parent)}</span>` : ""}</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">
+        <label class="switch"><input type="checkbox" data-private="${c.id}" ${c.private ? "checked" : ""}> Keep private</label>
+        <button class="btn danger small" data-del-conv="${c.id}">Delete</button>
+      </div>
+    </div>
+    ${people ? `<div class="people">${people}</div>` : ""}
+    ${status}
+    ${c.private ? `<p class="empty">Private: no questions are asked about this conversation.</p>` : ""}
+    ${c.summary_en && !c.private ? `<p class="summary">${esc(c.summary_en)}</p>` : ""}
+    ${cards && !c.private ? `<div class="qa">${cards}</div>` : ""}
+    <details id="d${c.id}"><summary>Transcript with English · ${c.lines.length} lines${c.source === "sample" ? " · sample translation" : ""}</summary>
+      <div class="tx"><table>${rows}</table></div></details>
+    <div class="del-confirm" id="dc${c.id}" hidden>
+      <p>Delete everything Memory Lane has from this conversation?</p>
+      <small>Bee keeps its own copy of the recording. To delete it there too, open the Bee app → Conversations and delete it from the list.</small>
+      <div class="bar">
+        <button class="btn danger small" data-del-conv-confirm="${c.id}">Delete</button>
+        <button class="btn ghost small" data-del-conv-cancel="${c.id}">Cancel</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+async function loadDay(){
+  dayData = await api("/api/day");
+  const dt = new Date(dayData.day + "T12:00");
+  document.getElementById("dayh").innerHTML = `Today <small>${dt.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric"})} · ${dayData.conversations.length} conversations</small>`;
+  const box = document.getElementById("day");
+  box.innerHTML = dayData.conversations.length ? dayData.conversations.map(convHTML).join("")
+    : `<p class="empty">Nothing yet today. Conversations appear after they end; press “Sync from Bee” to check now.</p>`;
+}
+
+async function loadPending(){
+  const { cards } = await api("/api/pending");
+  const box = document.getElementById("pending");
+  box.hidden = !cards.length;
+  if (!cards.length) return;
+  const items = cards.map((k) => {
+    const c = dayData && dayData.conversations.find((x) => x.id === k.conversation_id);
+    const quotes = c ? k.evidence.map((i) => c.lines[i]).filter(Boolean).map((l) => `<div class="quote">
+        <span class="who">${esc(l.at)} · ${esc(l.name || l.speaker)}</span><span lang="ne">${esc(l.text)}</span>${heardHTML(l)}${l.en && l.en !== l.text ? `<span class="tr">${esc(l.en)}</span>` : ""}</div>`).join("") : "";
+    return `<div class="item">
+      <div><b>${esc(k.question_en)}</b> <span class="ne" style="color:var(--muted)">· ${esc(k.question_parent)}</span></div>
+      <div>Answer she'll hear: <b>${esc(k.answer_en)}</b> <span style="color:var(--muted)">· ${esc(k.answer_parent)}</span></div>
+      <div class="quotes">${quotes}</div>
+      <div class="bar"><button class="btn small" data-approve="${k.id}">Approve</button><button class="btn danger small" data-del="${k.id}">Remove</button>
+        <span class="chip">${esc(k.when)} · ${esc(k.title_en)}</span></div></div>`;
+  }).join("");
+  box.innerHTML = `<h2>Waiting for your OK · ${cards.length}</h2><p class="empty" style="margin-top:-6px">Questions about health are only asked after someone in the family checks them against what was said.</p>${items}`;
+}
+
+async function loadSide(){
+  const p = await api("/api/practice");
+  const s = p.state;
+  document.getElementById("dots").innerHTML = s.results.map((r) => `<i class="${r || ""}"></i>`).join("") || `<span class="empty">No questions yet.</span>`;
+  document.getElementById("tonight").innerHTML =
+    `<div><b>${s.answered}/${s.total}</b><span>answered</span></div><div><b style="color:var(--leaf)">${s.remembered}</b><span>remembered</span></div>
+     <div><b style="color:var(--marigold)">${s.hint}</b><span>with a hint</span></div><div><b style="color:var(--rhodo)">${s.forgot}</b><span>forgot</span></div>`;
+  const g = await api("/api/progress?days=14");
+  const max = Math.max(1, ...g.days.map((d) => d.remembered + d.hint + d.forgot));
+  document.getElementById("rate").textContent = g.total ? `${Math.round(100 * g.remembered / g.total)}% remembered · ${g.streak}-day streak` : "";
+  document.getElementById("bars").innerHTML = g.days.map((d) => `<div class="barc" title="${d.day}: ${d.remembered} remembered, ${d.hint} with a hint, ${d.forgot} forgot">
+      <i class="r" style="height:${d.remembered / max * 100}%"></i><i class="h" style="height:${d.hint / max * 100}%"></i><i class="f" style="height:${d.forgot / max * 100}%"></i></div>`).join("");
+  document.getElementById("axis").innerHTML = g.days.map((d, i) => `<span>${i % 2 === 0 || i === 13 ? Number(d.day.slice(8)) : ""}</span>`).join("");
+  const fx = (await api("/api/facts")).facts;
+  document.getElementById("factsbox").hidden = !fx.length;
+  document.getElementById("facts").innerHTML = fx.map((f) => `<div class="promise">
+      <span>${esc(f.text_en)}</span><span style="color:var(--muted);font-size:15px" lang="ne">${esc(f.text_parent)}</span>
+      <span style="color:var(--dim);font-size:14px">From ${esc(f.when)} · ${esc(f.title_en)}</span>
+      <div class="row">${f.status === "saved" ? `<span class="chip ok">In Bee's memory</span>`
+          : `<button class="btn small" data-fact="${f.id}">Save to Bee</button><button class="btn ghost small" data-unfact="${f.id}">Not right</button>`}</div></div>`).join("");
+  const rm = (await api("/api/reminders")).reminders;
+  document.getElementById("reminders").innerHTML = rm.length ? `<p class="empty" style="margin:0">Set while she was talking:</p>` + rm.map(reminderHTML).join("") : "";
+  const pr = await api("/api/promises");
+  const items = pr.promises.filter((x) => x.status !== "dismissed");
+  document.getElementById("promises").innerHTML = items.length ? items.map((x) => `<div class="promise">
+      <span><b>${esc(x.by_parent ? "She" : x.who)}</b>: ${esc(x.text_en)}</span>
+      <span style="color:var(--muted);font-size:14px">${esc(x.text_parent)}</span>
+      <div class="row"><span class="chip">${x.due_date ? esc(x.due_date) : "no day said"}</span>
+        ${x.status === "reminder" ? `<span class="chip ok">In her Bee reminders</span>` :
+          `<button class="btn small" data-remind="${x.id}">Add to her Bee reminders</button><button class="btn ghost small" data-dismiss="${x.id}">Dismiss</button>`}</div></div>`).join("")
+    : `<p class="empty">Things people say they'll do show up here.</p>`;
+}
+
+function reminderHTML(r){
+  const alarm = r.alarm_at ? new Date(r.alarm_at).toLocaleString([], {weekday:"short", hour:"numeric", minute:"2-digit"}) : "no time said";
+  return `<div class="remind${r.status === "undone" ? " undone" : ""}" id="rm${r.id}"><span><b>⏰ In her Bee</b> · ${esc(alarm)}</span>
+    <span lang="ne">${esc(r.text_parent || r.text)}</span><span class="small">${esc(r.text_en || r.en)}</span>
+    ${r.said ? `<span class="small">She said: “${esc(r.said)}”</span>` : ""}
+    ${r.status === "undone" ? `<span class="small">Undone</span>` : `<span><button class="linkish" data-undo="${r.id}">Undo</button></span>`}</div>`;
+}
+
+let recorder = null;
+async function record(btn){
+  if (recorder) { recorder.stop(); return; }
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const chunks = [], started = Date.now();
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  const timer = setInterval(() => { btn.textContent = `■ Stop · ${Math.round((Date.now() - started) / 1000)}s`; if (Date.now() - started > 30000) recorder.stop(); }, 250);
+  btn.classList.add("rec"); btn.textContent = "■ Stop";
+  recorder.onstop = async () => {
+    clearInterval(timer); stream.getTracks().forEach((t) => t.stop());
+    const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+    recorder = null; btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      const res = await fetch(`/api/cards/${btn.dataset.rec}/voice`, { method: "PUT", headers: { "Content-Type": blob.type }, body: blob });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || `HTTP ${res.status}`);
+      await loadDay();
+    } catch (err) { btn.disabled = false; btn.classList.remove("rec"); btn.textContent = `🎙 Try again (${err.message})`; }
+  };
+  recorder.start();
+}
+
+function liveFeed(){
+  const box = document.getElementById("live"), chip = document.getElementById("livechip");
+  const items = new Map();
+  const es = new EventSource("/api/live");
+  es.onopen = () => { chip.textContent = health.bee === "cli" ? "listening" : "sample day"; chip.className = "chip ok"; };
+  es.onerror = () => { chip.textContent = "reconnecting"; chip.className = "chip warn"; };
+  es.onmessage = (ev) => {
+    const u = JSON.parse(ev.data);
+    if (u.type === "reminder") {   // pinned above the lines, so it stays in view while she keeps talking
+      if (!document.getElementById(`lrm${u.id}`))
+        document.getElementById("livepins").insertAdjacentHTML("afterbegin", reminderHTML({ ...u, status: "set" }).replace(`id="rm${u.id}"`, `id="lrm${u.id}"`));
+      loadSide();
+      return;
+    }
+    if (u.type === "translation") {
+      const el = items.get(u.id);
+      if (el) {
+        const t = el.querySelector(".en"); t.textContent = u.en; t.classList.remove("wait");
+        if (u.fixed) {   // the rebuilt Nepali takes the main place; Bee's words move underneath
+          const o = el.querySelector(".o"), heard = o.textContent;
+          o.textContent = u.fixed;
+          o.insertAdjacentHTML("afterend", `<span class="heard" lang="hi">Bee heard: ${esc(heard)}</span>`);
+        }
+        if (u.background) el.classList.add("bg");
+      }
+      return;
+    }
+    if (box.querySelector(".empty")) box.innerHTML = "";
+    box.querySelectorAll(".utt.new").forEach((n) => n.classList.remove("new"));
+    const at = new Date(u.at).toLocaleTimeString([], {hour:"numeric", minute:"2-digit", second:"2-digit"});
+    const who = String(u.speaker || "").replace(/^SPEAKER_(\d+)$/i, "Speaker $1");
+    box.insertAdjacentHTML("afterbegin", `<div class="utt new" id="u${u.id}"><span class="who">${at} · ${esc(who)}${u.demo ? " · sample" : ""}</span>
+      <span class="o" lang="ne">${esc(u.text)}</span><span class="en${u.en ? "" : " wait"}">${esc(u.en || (health.ai === "mock" && health.bee === "cli" ? "" : "translating…"))}</span></div>`);
+    items.set(u.id, document.getElementById(`u${u.id}`));
+  };
+  if (health.bee === "demo") {
+    document.getElementById("replay").innerHTML = `<button class="btn ghost small" data-replay="101">Play the morning call live</button>`;
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("button");
+  if (!t) return;
+  try {
+    if (t.dataset.line) {
+      const d = document.getElementById(`d${t.dataset.conv}`); d.open = true;
+      const row = document.getElementById(`l${t.dataset.conv}-${t.dataset.line}`);
+      document.querySelectorAll("tr.hl").forEach((r) => r.classList.remove("hl"));
+      row.classList.add("hl");
+      row.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      setTimeout(() => row.classList.remove("hl"), 4000);
+    }
+    if (t.dataset.del) { t.disabled = true; await api(`/api/cards/${t.dataset.del}`, { method: "DELETE" }); await refresh(); }
+    if (t.dataset.approve) { t.disabled = true; await api(`/api/cards/${t.dataset.approve}/approve`, { method: "POST" }); await refresh(); }
+    if (t.dataset.delConv) {
+      // Show the inline confirm row; disable the Delete button while visible
+      const confirmBox = document.getElementById(`dc${t.dataset.delConv}`);
+      if (confirmBox) { confirmBox.hidden = false; t.disabled = true; }
+      return;
+    }
+    if (t.dataset.delConvConfirm) {
+      t.disabled = true;
+      await api(`/api/conversations/${t.dataset.delConvConfirm}`, { method: "DELETE" });
+      await refresh();
+      return;
+    }
+    if (t.dataset.delConvCancel) {
+      const confirmBox = document.getElementById(`dc${t.dataset.delConvCancel}`);
+      if (confirmBox) { confirmBox.hidden = true; }
+      // Re-enable the Delete button
+      const delBtn = document.querySelector(`[data-del-conv="${t.dataset.delConvCancel}"]`);
+      if (delBtn) delBtn.disabled = false;
+      return;
+    }
+    if (t.dataset.rec) { return await record(t); }
+    if (t.dataset.unvoice) { t.disabled = true; await api(`/api/cards/${t.dataset.unvoice}/voice`, { method: "DELETE" }); await loadDay(); }
+    if (t.dataset.fact) { t.disabled = true; await api(`/api/facts/${t.dataset.fact}/save`, { method: "POST" }); await loadSide(); }
+    if (t.dataset.unfact) { await api(`/api/facts/${t.dataset.unfact}/dismiss`, { method: "POST" }); await loadSide(); }
+    if (t.dataset.undo) { t.disabled = true; await api(`/api/reminders/${t.dataset.undo}/undo`, { method: "POST" });
+      document.querySelectorAll(`#lrm${t.dataset.undo}`).forEach((n) => n.classList.add("undone")); await loadSide(); }
+    if (t.dataset.remind) { t.disabled = true; await api(`/api/promises/${t.dataset.remind}/remind`, { method: "POST" }); await loadSide(); }
+    if (t.dataset.dismiss) { await api(`/api/promises/${t.dataset.dismiss}/dismiss`, { method: "POST" }); await loadSide(); }
+    if (t.dataset.replay) { t.disabled = true; await api(`/api/demo/replay/${t.dataset.replay}`, { method: "POST" }); setTimeout(() => t.disabled = false, 15000); }
+    if (t.id === "reset") { t.disabled = true; const r = await api("/api/practice/reset", { method: "POST" }); t.textContent = `Reset (${r.undone} answers undone)`; await loadSide(); setTimeout(() => { t.disabled = false; t.textContent = "Reset tonight's practice"; }, 2500); }
+    if (t.id === "sync") { t.disabled = true; await api("/api/sync", { method: "POST" }); await loadHealth(); }
+    if (t.id === "pause1h") { t.disabled = true; await api("/api/pause", { method: "POST", body: JSON.stringify({ minutes: 60 }) }); await loadHealth(); t.disabled = false; }
+    if (t.id === "pausetom") { t.disabled = true; await api("/api/pause", { method: "POST", body: JSON.stringify({ until: "tomorrow" }) }); await loadHealth(); t.disabled = false; }
+    if (t.id === "resume") { t.disabled = true; await api("/api/resume", { method: "POST" }); await loadHealth(); t.disabled = false; }
+  } catch (err) {
+    t.disabled = false;
+    document.getElementById("syncstate").innerHTML = `<span class="chip bad">${esc(err.message)}</span>`;
+  }
+});
+document.addEventListener("change", async (e) => {
+  const t = e.target;
+  if (!t.dataset.private) return;
+  try { await api(`/api/conversations/${t.dataset.private}/private`, { method: "POST", body: JSON.stringify({ private: t.checked }) }); await refresh(); }
+  catch (err) { t.checked = !t.checked; }
+});
+async function refresh(){ await loadHealth(); await loadDay(); await Promise.all([loadPending(), loadSide()]); }
+
+refresh().then(liveFeed).catch((err) => {
+  document.getElementById("day").innerHTML = `<p class="empty">${esc(err.message)}</p>`;
+});
+</script>
+</body>
+</html>

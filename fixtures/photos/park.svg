@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <title>Sample photo: an afternoon at the park (illustration)</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3f5"/><stop offset="1" stop-color="#e3f3fc"/></linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8cc66a"/><stop offset="1" stop-color="#5e9e45"/></linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#sky)"/>
+  <circle cx="980" cy="160" r="70" fill="#ffd866"/>
+  <path d="M0 470 Q300 400 600 450 T1200 430 V900 H0Z" fill="#a9d68a"/>
+  <path d="M0 560 Q400 500 800 560 T1200 540 V900 H0Z" fill="url(#grass)"/>
+  <path d="M520 900 Q600 700 760 560" stroke="#d9c7a3" stroke-width="70" fill="none" stroke-linecap="round"/>
+  <g><rect x="150" y="360" width="34" height="210" fill="#7a5235"/><circle cx="167" cy="320" r="110" fill="#3f8a3a"/><circle cx="110" cy="370" r="70" fill="#4d9c45"/><circle cx="230" cy="365" r="75" fill="#4d9c45"/></g>
+  <g><rect x="980" y="390" width="28" height="170" fill="#7a5235"/><circle cx="994" cy="355" r="90" fill="#46923f"/><circle cx="950" cy="395" r="55" fill="#55a64b"/></g>
+  <g fill="#8a5a3b"><rect x="330" y="610" width="300" height="22" rx="6"/><rect x="330" y="568" width="300" height="20" rx="6"/><rect x="350" y="632" width="16" height="60"/><rect x="594" y="632" width="16" height="60"/></g>
+  <g><circle cx="420" cy="500" r="30" fill="#5b3a29"/><path d="M380 600 Q420 520 460 600Z" fill="#d6336c"/><circle cx="530" cy="505" r="28" fill="#3b2a20"/><path d="M492 600 Q530 528 568 600Z" fill="#2f6fb3"/></g>
+  <g fill="#e94e77"><circle cx="760" cy="660" r="10"/><circle cx="800" cy="690" r="9"/><circle cx="270" cy="700" r="10"/></g>
+  <g fill="#ffd23f"><circle cx="780" cy="640" r="8"/><circle cx="250" cy="680" r="8"/><circle cx="840" cy="700" r="8"/></g>
+  <text x="1170" y="880" text-anchor="end" font-family="sans-serif" font-size="22" fill="#ffffff" opacity=".85">sample photo · illustration</text>
+</svg>

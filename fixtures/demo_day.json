@@ -1,0 +1,256 @@
+{
+  "note": "A sample day in the shape `bee conversations get --json` returns. Written for the demo, not real data. Times are minutes after local midnight; DemoBee shifts them to today.",
+  "conversations": [
+    {
+      "id": 101,
+      "start_minute": 520,
+      "minutes": 6,
+      "bee_title": "Call with sister",
+      "bee_summary": "Phone call with sister about a niece's wedding.",
+      "utterances": [
+        {
+          "speaker": "SPEAKER_2",
+          "second": 0,
+          "text": "हेलो बहिनी, म कमला। काठमाडौंबाट बोल्दैछु, सन्चै छौ?"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 8,
+          "text": "ओहो दिदी! म सन्चै छु। तपाईंलाई कस्तो छ? घरमा सबै ठीक छन्?"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 18,
+          "text": "सबै ठीक छन्। सुन न, प्रियाको बिहे मंसिर १२ गते पक्का भयो। नोभेम्बर २८ तारिख।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 30,
+          "text": "ए कति राम्रो खबर! केटा कहाँको हो?"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 38,
+          "text": "केटा पोखराको हो, इन्जिनियर छ। नाम सुमन।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 47,
+          "text": "सुमन, पोखराको इन्जिनियर। हामी पनि आउन खोज्छौँ।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 58,
+          "text": "अनि बहिनी, पुराना पारिवारिक फोटोहरू पठाइदेऊ है, बिहेमा देखाउने।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 70,
+          "text": "हुन्छ दिदी, म आइतबार फेरि फोन गर्छु अनि फोटो पनि पठाउँछु।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 80,
+          "text": "ल ठीक छ, आइतबार कुरा गरौँला। ख्याल राख है।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 88,
+          "text": "तपाईं पनि ख्याल राख्नुहोस् दिदी।"
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "start_minute": 675,
+      "minutes": 9,
+      "bee_title": "Doctor visit",
+      "bee_summary": "Doctor visit about blood pressure; new medication and a follow-up appointment.",
+      "utterances": [
+        {
+          "speaker": "SPEAKER_3",
+          "second": 0,
+          "text": "Your blood pressure is a bit high today, 150 over 90."
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 9,
+          "text": "आमा, डाक्टरले प्रेसर अलि बढी छ भन्नुभयो, एक सय पचास र नब्बे।"
+        },
+        {
+          "speaker": "SPEAKER_3",
+          "second": 20,
+          "text": "I'm starting a new tablet, amlodipine 5 milligrams, once a day in the morning."
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 31,
+          "text": "नयाँ औषधि दिनुभयो, एम्लोडिपिन ५ मिलिग्राम। दिनमा एक पटक, बिहान।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 42,
+          "text": "खाना खाएपछि खाने कि अघि?"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 47,
+          "text": "Doctor, after breakfast or before?"
+        },
+        {
+          "speaker": "SPEAKER_3",
+          "second": 52,
+          "text": "After breakfast is fine. And stop the old water pill, the hydrochlorothiazide."
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 63,
+          "text": "बिहानको खाना खाएपछि खानुहोस्। अनि पुरानो पानीको चक्की चाहिँ अब नखाने रे।"
+        },
+        {
+          "speaker": "SPEAKER_3",
+          "second": 75,
+          "text": "Come back in two weeks, Thursday the 29th at 10:30, so we can check it again."
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 86,
+          "text": "अर्को भेट दुई हप्तापछि, बिहीबार २९ गते, साढे दस बजे।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 95,
+          "text": "बिहीबार २९ गते साढे दस बजे। ठीक छ, धन्यवाद डाक्टर।"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "start_minute": 845,
+      "minutes": 7,
+      "bee_title": "Chat at the park",
+      "bee_summary": "Conversation with a neighbour at the park about her grandson and a walking group.",
+      "utterances": [
+        {
+          "speaker": "SPEAKER_2",
+          "second": 0,
+          "text": "नमस्ते दिदी! आज घाम लागेको छ, हिँड्न आउनुभएको?"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 7,
+          "text": "नमस्ते माया। हो, अलिकति हिँड्न आएँ। तपाईंको नाति कस्तो छ?"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 16,
+          "text": "आरव त यो हप्ता किन्डरगार्टेन जान थाल्यो। पहिलो दिन रोयो, अब रमाउँछ।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 27,
+          "text": "ओहो, आरव स्कुल जान थालेछ! कति छिटो ठूलो भयो।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 35,
+          "text": "हाम्रो हिँड्ने समूह मंगलबार र शुक्रबार बिहान सात बजे यही पार्कमा भेट्छ। तपाईं पनि आउनुस् न।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 48,
+          "text": "मंगलबार र शुक्रबार सात बजे? म पनि आउँछु।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 55,
+          "text": "अनि मैले भनेको लप्सीको अचारको विधि अर्को पटक ल्याइदिन्छु।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 64,
+          "text": "हुन्छ, लप्सीको अचार मलाई धेरै मन पर्छ।"
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "start_minute": 1110,
+      "minutes": 8,
+      "bee_title": "Dinner",
+      "bee_summary": "Dinner conversation about a birthday next Saturday and household tasks.",
+      "utterances": [
+        {
+          "speaker": "SPEAKER_2",
+          "second": 0,
+          "text": "आमा, अर्को शनिबार सीताको जन्मदिन हो, याद छ नि?"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 7,
+          "text": "याद छ, म अर्को शनिबार मम बनाउँछु। सीतालाई कुखुराको मम मन पर्छ।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 17,
+          "text": "म चाहिँ शुक्रबार साँझ बजारबाट मासु र मैदा ल्याइदिन्छु।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 26,
+          "text": "हुन्छ बाबु। अनि टिभीको रिमोट फेरि चलेन नि।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 33,
+          "text": "म भोलि ब्याट्री फेरिदिन्छु, रिमोट ठीक हुन्छ।"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 40,
+          "text": "अनि बुहारीलाई पनि शनिबार बोलाउनु है।"
+        },
+        {
+          "speaker": "SPEAKER_2",
+          "second": 46,
+          "text": "हुन्छ, म आजै फोन गरेर भन्छु।"
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "start_minute": 1000,
+      "minutes": 1,
+      "bee_title": "Checkout",
+      "bee_summary": "Short exchange at a store checkout.",
+      "utterances": [
+        {
+          "speaker": "SPEAKER_2",
+          "second": 0,
+          "text": "Paper or plastic?"
+        },
+        {
+          "speaker": "SPEAKER_1",
+          "second": 3,
+          "text": "Plastic, thank you."
+        }
+      ]
+    }
+  ],
+  "facts": [
+    "Bikash is my son; I live with him in Denver",
+    "Sita is my granddaughter"
+  ],
+  "photos": [
+    {
+      "id": 501,
+      "minute": 848,
+      "file": "park.svg"
+    },
+    {
+      "id": 502,
+      "minute": 1115,
+      "file": "dinner.svg"
+    }
+  ]
+}

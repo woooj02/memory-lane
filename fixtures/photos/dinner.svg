@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <title>Sample photo: dinner at home (illustration)</title>
+  <rect width="1200" height="900" fill="#f6e7d4"/>
+  <rect y="560" width="1200" height="340" fill="#b9814f"/>
+  <rect y="560" width="1200" height="18" fill="#9c6a3e"/>
+  <rect x="80" y="90" width="300" height="220" rx="10" fill="#fff6e8" stroke="#c9a77c" stroke-width="10"/>
+  <path d="M110 280 L190 180 L250 240 L300 190 L350 280Z" fill="#9cc58a"/>
+  <circle cx="320" cy="140" r="22" fill="#f4c04e"/>
+  <g transform="translate(600 700)">
+    <ellipse rx="300" ry="110" fill="#ffffff" stroke="#e0d6c8" stroke-width="8"/>
+    <ellipse rx="220" ry="72" fill="#fbfaf7"/>
+    <g fill="#f3e3c3" stroke="#d9c39a" stroke-width="4">
+      <path d="M-150 -10 q30 -60 60 0 q-30 25 -60 0Z"/><path d="M-70 -30 q30 -60 60 0 q-30 25 -60 0Z"/>
+      <path d="M10 -20 q30 -60 60 0 q-30 25 -60 0Z"/><path d="M90 -5 q30 -60 60 0 q-30 25 -60 0Z"/>
+      <path d="M-110 30 q30 -60 60 0 q-30 25 -60 0Z"/><path d="M-30 25 q30 -60 60 0 q-30 25 -60 0Z"/>
+      <path d="M50 35 q30 -60 60 0 q-30 25 -60 0Z"/>
+    </g>
+  </g>
+  <g transform="translate(980 650)"><ellipse rx="90" ry="34" fill="#ffffff" stroke="#e0d6c8" stroke-width="6"/><ellipse rx="62" ry="22" fill="#d9472b"/></g>
+  <g transform="translate(220 660)"><rect x="-40" y="-90" width="80" height="110" rx="12" fill="#ffffff" stroke="#e0d6c8" stroke-width="6"/><rect x="-32" y="-60" width="64" height="72" rx="8" fill="#c8793a"/></g>
+  <path d="M520 560 q20 -60 0 -110 M600 550 q20 -60 0 -120 M680 560 q20 -60 0 -110" stroke="#ffffff" stroke-width="10" fill="none" opacity=".7" stroke-linecap="round"/>
+  <text x="1170" y="880" text-anchor="end" font-family="sans-serif" font-size="22" fill="#ffffff" opacity=".85">sample photo · illustration</text>
+</svg>

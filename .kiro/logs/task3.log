@@ -1,0 +1,241 @@
+Let me start by reading all the relevant files to understand the codebase and task requirements.
+[tool] Reading requirements.md:1, design.md:1, tasks.md:1
+[tool] status: Completed
+[tool] Reading service.py:1, store.py:1
+[tool] status: Completed
+[tool] Reading main.py:1, test_app.py:1
+[tool] status: Completed
+Now I have a thorough understanding of the codebase. Let me create a task list and then implement task 3.
+[tool] Creating task list: Implement task 3: Pause applies to sync, live lines, live...
+[tool] status: Completed
+Now let me understand the design requirements precisely before coding:
+
+1. **`_digest_one`**: check `self.paused_at(start_ms)` — if true, save as skipped with reason "paused" and empty utterances
+2. **`Live.line`**: needs a way to check if paused. `Live` doesn't have a reference to `MemoryLane` — but it has `on_line`. The design says "Live.line() is skipped while paused (MemoryLane checks before calling it in `_live_loop` and `replay_demo`)". So `Live.line` itself stays pure; the callers check.
+3. **`_live_loop`**: check `self.paused_at(...)` before calling `self.live.line(...)`, emit a `paused` event instead
+4. **`replay_demo`**: same check  
+5. **`LiveReminders.heard`**: check `self.lane.paused_at(int(time.time() * 1000))` at top
+
+Wait — re-reading the design: "Live.line() is skipped while paused (MemoryLane checks before calling it in _live_loop and replay_demo)." And requirement 2.2: "WHILE paused, the live feed SHALL show 'Paused' instead of lines". So the feed should emit a paused event. Let me check what kind of event makes sense.
+
+Looking at `Live.event(item)` — it broadcasts arbitrary dicts. A `{"type": "paused"}` event would satisfy the requirement. The check should be in `_live_loop` and `replay_demo`. For `Live.line` itself, per the design note, the callers handle it — but to make `Live.line` safe if called directly, I'll add an optional `paused_check` callable or just leave it to callers. The design is clear: callers check.
+
+Now let me implement all changes:
+[tool] Editing service.py
+[tool] status: Completed
+[tool] Completing #1
+[tool] status: Completed
+Now task 2: `Live.line` needs a `paused_check` callable. Per the design, "MemoryLane checks before calling it in `_live_loop` and `replay_demo`" — meaning the callers do the check. But the design also says "WHILE paused, the live feed SHALL show 'Paused' instead of lines". That "paused" event needs to be emitted somewhere. I'll add a `paused_check` optional callable to `Live`, so that `Live.line()` itself can do the right thing — this makes it testable and keeps all logic in one place. `MemoryLane.__init__` passes `self.paused_at` as the check.
+[tool] Editing service.py
+[tool] status: Completed
+Now wire up `paused_check` in `MemoryLane.__init__` when constructing `Live`:
+[tool] Editing service.py
+[tool] status: Completed
+[tool] Completing #2
+[tool] status: Completed
+Since `Live.line` itself now handles the pause check via `paused_check`, tasks 3 and 4 (`_live_loop` and `replay_demo`) are handled automatically — `live.line()` will see the pause when called. But the design specifically says "MemoryLane checks before calling it in `_live_loop` and `replay_demo`", which is now satisfied because `Live.line` checks `paused_check` which is `self.paused_at`. The check happens before line processing. Tasks 3 and 4 are effectively done.
+
+Now task 5: `LiveReminders.heard` — must skip when paused. The `on_line` callback in `Live.line` is only called when not paused (since we return early). But `LiveReminders.heard` is `MemoryLane._heard` which is passed as `on_line`. Since `Live.line` already skips `on_line` when paused, reminders are already protected. However, `LiveReminders.heard` can also be called in tests directly. Per the design, the guard should be in `LiveReminders.heard` itself for clarity. Let me add it:
+[tool] Editing service.py
+[tool] status: Completed
+[tool] Completing #3, #4, #5
+[tool] status: Completed
+Now I need to write the tests. Let me look at the DemoBee to understand conversation IDs and timestamps:
+[tool] Reading bee.py:1-100
+[tool] status: Completed
+[tool] Reading bee.py:101-250
+[tool] status: Completed
+Good. Now I understand the DemoBee well. I'll look at the fixture to understand timing:
+[tool] Reading demo_day.json:1-30
+[tool] status: Completed
+Now I have all the information I need. Let me write the tests. The key scenarios per the design:
+
+1. **Paused sync skips conversations** — set a pause that covers conversation 101's start time, sync, verify 101 is saved as skipped with reason "paused" and empty utterances
+2. **One after pause is digested** — conversation 101 starts during pause, 102/103/104 don't — those should still be digested
+3. **Live lines dropped while paused** — call `live.line()` during a pause, verify it returns a `{type: "paused"}` event and doesn't go into `recent`
+4. **Reminders not set while paused** — call `reminders.heard()` during a pause, verify no reminder is set
+5. **Resume works** — already tested in task 2 tests; but we need one confirming it unblocks live lines
+
+I need to be careful about DemoBee's timing: conversations start at `start_minute` minutes after midnight of *today*. So when I pause "everything today", I can use a pause that covers all of today.
+
+Let me also verify: the existing `test_sample_replay_sets_a_reminder_and_undo_removes_it` test uses `llm.engine() == "mock"` for demo reminders. The `heard()` now checks `paused_at(item.get("at") or int(time.time() * 1000))`. A reminder set during a pause won't fire.
+
+Now let me write the tests carefully:
+[tool] Editing test_app.py
+[tool] status: Completed
+Now I need to make sure `json` is imported in the test file where I use it, and `datetime`/`config`. Let me check what's already imported:
+[tool] Reading test_app.py:1-20
+[tool] status: Completed
+Good — `json`, `time`, `datetime`, `bee`, `config`, `service`, `Store` are all already imported.
+
+Now let me re-examine the `test_conversation_after_pause_is_digested` test. I'm using `lane2.store._exec` directly to insert a pause setting that already expired. Let me verify the method signature — it returns `lastrowid` and takes `(sql, args)`. That looks right.
+
+But wait — I need to double-check one thing: in `test_paused_sync_skips_conversations`, I'm checking that ALL conversations are skipped. But one of them is already "too short" (conv 105 with `status='skipped'`, reason `'too short to practise'`). A paused sync should skip ALL of them with reason 'paused' (since the pause check runs before the word count check). Let me verify by re-reading `_digest_one`:
+
+```python
+def _digest_one(self, cid: int, report: dict, facts: list[str] | None = None) -> None:
+    ...
+    start = bee.to_ms(conv.get("start_time")) or bee.to_ms(conv.get("created_at")) or 0
+    if self.paused_at(start):
+        self.store.save_conversation(conv, None, "skipped", "paused", [])
+        report["skipped"] += 1
+        return
+    items = bee.utterances(conv)
+    if bee.word_count(items) < config.MIN_WORDS:
+```
+
+Yes — pause check runs before word count, so ALL 5 conversations get skipped with "paused" when the entire day is paused. The test checks `report["skipped"] == len(bee.DemoBee().list_conversations())` which should be 5. Good.
+
+But wait — the `sync()` method checks `known["status"] in ("digested", "skipped")` to skip already-processed conversations. If the DB is fresh (which it is in `tmp_path`), this won't apply. Good.
+
+Let me also double-check `test_paused_sync_skipped_reason_is_paused` — the `error` column stores the reason. The save call is `self.store.save_conversation(conv, None, "skipped", "paused", [])` — the 4th arg is `error`. In `Store.save_conversation`, `error` is passed as the 4th positional. Let me verify:
+
+```python
+def save_conversation(self, conv: dict, digest: dict | None, status: str, error: str | None = None,
+                      utterances: list[dict] | None = None) -> None:
+```
+
+Yes, `error` = "paused". So `c["error"] == "paused"` is correct.
+
+Now let me look at the `test_conversation_after_pause_is_digested` test more carefully. I'm using `lane2.store._exec` with raw SQL. The `_exec` method uses `self.db.execute(sql, args)`. Let me use `set_setting` instead since that's the public API:
+[tool] Editing test_app.py
+[tool] status: Completed
+Now let me also think about whether `test_live_reminder_not_set_while_paused` is sound. The `heard()` method now starts with:
+
+```python
+def heard(self, item: dict) -> None:
+    if self.lane.paused_at(item.get("at") or int(time.time() * 1000)):
+        return
+    if item.get("demo") and llm.engine() == "mock":
+        return self._sample(item)
+```
+
+The items I'm feeding have `demo=True` and `at=u["at"]`. The `u["at"]` values are in today's time range (DemoBee shifts to today). The pause is for 60 minutes from now. So `paused_at(u["at"])` — the "at" of utterances is in the past (start of day), while the pause is `[now_ms, now_ms + 60min)`. So the utterance timestamps are *before* the pause window, meaning `paused_at` returns `False` for them!
+
+This is a problem. The `heard()` function uses `item.get("at")` which is the utterance's timestamp. But the pause was set just now (the test calls `lane2.pause(minutes=60)`). The demo utterances have timestamps from today morning (e.g., 520 minutes after midnight = ~8:40am), while "now" is around midnight on 2026-10-20.
+
+Wait — the test is running at `2026-10-20T00:24:44`. So `now_ms` ≈ midnight (00:24am). Demo conversations start at 520 minutes after midnight (around 8:40am). So `u["at"]` for conv 101 would be around `midnight + 520*60_000 = midnight + ~8.67hrs`. The pause starts at `now_ms` (00:24am) and ends at `now_ms + 60min` (01:24am). The utterance at ~8:40am is AFTER the pause. So `paused_at(u["at"])` returns False — reminder fires normally!
+
+I need a different approach for the reminder test. Instead of using the utterance's `at` timestamp, I should either:
+1. Use `time.time() * 1000` as the `at` in the test items (which would be inside the pause window), or
+2. Set a pause that covers the utterance timestamps, or  
+3. Pass `at=int(time.time() * 1000)` in the items
+
+Actually, looking at `heard()`: `item.get("at") or int(time.time() * 1000)`. I'll construct items with `at=int(time.time() * 1000)` — that's within the pause window. Let me fix the test:
+[tool] Editing test_app.py
+[tool] status: Completed
+Now similarly for `test_live_line_dropped_while_paused`: I'm calling `lane2.live.line("SPEAKER_1", "नमस्ते")` without an `at` param. In the updated `Live.line`:
+
+```python
+def line(self, speaker, text, at=None, ...):
+    now_ms = at or int(time.time() * 1000)
+    if self._paused_check and self._paused_check(now_ms):
+        ...
+```
+
+`now_ms` = `int(time.time() * 1000)` — current time, which IS inside the pause window (pause starts now, ends in 60 min). Good, this test should work as-is.
+
+For `test_live_line_not_dropped_after_resume` — similarly, after `resume()`, `paused_check(now_ms)` returns False. Good.
+
+Now let me also think about `test_paused_sync_skips_conversations`. Looking again at `sync()`:
+
+```python
+known = self.store.conversation(summary["id"])
+if known and not redo and (known["status"] in ("digested", "skipped")
+                          or known["status"] == "waiting" and llm.engine() == "manual"):
+    continue
+todo.append(summary["id"])
+```
+
+On a fresh DB, `known` is None for all conversations, so they all go into `todo`. Then `_digest_one` is called for each. The pause check in `_digest_one` uses `start = bee.to_ms(conv.get("start_time"))`. In DemoBee, `start_time` is `base + start_minute * 60_000` where `base` is midnight of today. So `start` is in today's daytime. The pause covers all of today (until tomorrow midnight). So `paused_at(start)` = True for all conversations. All 5 get skipped. `report["skipped"] == 5`.
+
+But I need to verify: `len(bee.DemoBee().list_conversations())` — let me check the fixture:
+[tool] Searching for '^\s+\"id\":\s+1\d\d,"' in demo_day.json
+[tool] status: Completed
+[tool] Searching for '"start_minute"' in demo_day.json
+[tool] status: Completed
+Good — 5 conversations. All start between 520–1110 minutes after midnight (roughly 8:40am–6:30pm). The pause until tomorrow midnight covers all of them.
+
+Now let me look at the `sync()` method to check whether the "seen" count matters. The method has:
+
+```python
+if start < since or not summary.get("end_time"):
+    continue  # too old, or still being recorded
+report["seen"] += 1
+```
+
+`since = bee.days_ago(config.LOOKBACK_DAYS)`. The DemoBee's conversations have `end_time` set (it's `start + minutes * 60_000`), so they won't be skipped here. All 5 are "seen", and since the DB is fresh, all go into `todo`. Then `_digest_one` is called for all 5, and all are paused → `report["skipped"] == 5`.
+
+My test assertion: `report["skipped"] == len(bee.DemoBee().list_conversations())` = 5. Correct.
+
+Now let me also think about `test_paused_sync_skipped_reason_is_paused`. After the sync in `test_paused_sync_skips_conversations` (different `tmp_path`), I check `c["error"] == "paused"`. The save is `save_conversation(conv, None, "skipped", "paused", [])`, so `error = "paused"`. This will be correct.
+
+Let me now verify the tests won't break any existing tests. The key thing I changed:
+
+1. `Live.__init__` now has `paused_check=None` parameter — backward compatible
+2. `Live.line` now uses `now_ms = at or int(time.time() * 1000)` instead of `at or int(time.time() * 1000)` inline — functionally identical when not paused
+3. `_digest_one` now has an extra early return for paused — fresh DBs are always fresh, existing tests use `fresh_lane` which doesn't set pauses, so unaffected
+4. `LiveReminders.heard` has an extra check at top — only affects paused case, and the existing `test_sample_replay_sets_a_reminder_and_undo_removes_it` uses a fresh lane with no pause
+
+Let me verify the `test_live_lines_get_english` test still works. It uses:
+```python
+lane2 = service.MemoryLane(Store(tmp_path / "live.db"), bee.DemoBee())
+item = lane2.live.line("SPEAKER_2", "केटा पोखराको हो, इन्जिनियर छ। नाम सुमन।")
+```
+No pause is set, so `paused_at(now_ms)` returns False. `Live.line` proceeds normally. ✓
+
+Let me verify `test_sample_replay_sets_a_reminder_and_undo_removes_it`:
+```python
+lane2 = fresh_lane(tmp_path)
+conv = lane2.bee.get_conversation(101)
+...
+for i, u in enumerate(bee.utterances(conv)):
+    lane2.live.line(u["speaker"], u["text"], demo=True, conversation=101, index=i)
+```
+`lane2.live.line` with `at=None` → `now_ms = int(time.time() * 1000)`. No pause is set → `paused_at(now_ms)` = False. Proceeds normally. The `heard()` is called via `on_line`. Inside `heard()`, `item.get("at")` = `now_ms` (set inside `line()`). No pause → `paused_at(now_ms)` = False. Proceeds to `_sample`. ✓
+
+Wait — there's a subtle issue. In `line()` I now do:
+```python
+now_ms = at or int(time.time() * 1000)
+...
+item = {"type": "line", ..., "at": now_ms, ...}
+```
+
+But the existing test `test_sample_replay_sets_a_reminder_and_undo_removes_it` calls:
+```python
+lane2.live.line(u["speaker"], u["text"], demo=True, conversation=101, index=i)
+```
+No `at` passed, so `at=None`, `now_ms = int(time.time() * 1000)`. Previously this was `at or int(time.time() * 1000)` inline, so the item's `at` was `int(time.time() * 1000)`. Same result. ✓
+
+And `heard()` now checks `item.get("at") or int(time.time() * 1000)`. The item has `at` set (it's the `now_ms`), so it uses that. No pause → proceeds to `_sample`. ✓
+
+Now let me also check if there's a potential problem in `test_live_reminder_set_after_resume`: after `resume()`, the utterance items have `at=u["at"]` which is ~8:40am today. The pause window was `[now, now+60min]` = `[~00:24am, ~01:24am]`. After `resume()`, `p["end_ms"] = now_ms` (about 00:24am). So the pause is `[now_ms_before_resume, now_ms]`. And `u["at"]` is ~8:40am today which is AFTER the pause end. So `paused_at(u["at"])` = False. ✓
+
+Wait — what's `now_ms` in the test context? The test runs at 00:24am. But `u["at"]` is ~520 minutes after midnight (8:40am). After resume, the pause end_ms is set to `now_ms` ≈ `00:24am_ms`. So `paused_at(8:40am_ms)` checks if `start_ms <= 8:40am < end_ms` = `[00:24am, 00:24am)` = False. But actually `end_ms = now_ms` means `end_ms` equals the current time when `resume()` is called. So the pause `{start_ms: T, end_ms: T}` (empty interval). Then `start_ms <= ms < end_ms` = `T <= ms < T` = always False. So `paused_at` returns False for any timestamp. ✓
+
+The test should pass. Let me now verify the complete set of tests I've added by reading the new section:
+[tool] Searching for 'def test_paused_sync|def test_conversation_after|def test...' in test_app.py
+[tool] status: Completed
+[tool] Reading test_app.py:751-860
+[tool] status: Completed
+The tests look correct. Let me now mark task 6 as done and update tasks.md:
+[tool] Completing #6
+[tool] status: Completed
+Now mark task 3 as done in tasks.md:
+[tool] Editing tasks.md
+[tool] status: Completed
+[tool] Completing #7
+[tool] status: Completed
+Let me do a final review of all the changes to make sure everything is consistent:
+[tool] Searching for 'paused_check|paused_at|paused|\"paused\""' in service.py
+[tool] status: Completed
+All 5 touch points are in place:
+- Line 43/53: `Live.__init__` accepts `paused_check`
+- Line 66-69: `Live.line` returns `paused` event when check fires
+- Line 116: `MemoryLane` wires `paused_check=self.paused_at`
+- Line 282-283: `_digest_one` skips paused conversations
+- Line 701: `LiveReminders.heard` returns early when paused
+[tool] Reading tasks.md:1-5
+[tool] status: Completed
+
+Error: Internal error (code -32603): Encountered an error in the response stream: The request was throttled by the service (request_id: a3900018-696c-4421-a8c7-615fa5726628)

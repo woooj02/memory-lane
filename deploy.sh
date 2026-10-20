@@ -45,6 +45,9 @@ echo "==> upload"
 rsync -az --delete -e "ssh -i $KEY" \
   --exclude venv/ --exclude .env --exclude __pycache__/ --exclude .pytest_cache/ \
   --exclude .git/ --exclude 'data/' ./ "$SERVER:$REMOTE/"
+# The Bee library (our Open Source add-on) ships alongside until it's on PyPI.
+[ -d ../bee-cli-python ] && rsync -az --delete -e "ssh -i $KEY" --exclude venv/ --exclude __pycache__/ \
+  --exclude .pytest_cache/ --exclude .git/ ../bee-cli-python/ "$SERVER:$REMOTE/../bee-cli-python/"
 # Replays are uploaded separately and never deleted, so a recording made on
 # the box survives redeploys.
 [ -d data/replays ] && rsync -az -e "ssh -i $KEY" data/replays/ "$SERVER:$REMOTE/data/replays/"
@@ -58,7 +61,13 @@ set -euo pipefail
 mkdir -p "$REMOTE/data"
 [ -x "$REMOTE/venv/bin/python" ] || python3 -m venv "$REMOTE/venv"
 "$REMOTE/venv/bin/pip" install -q --upgrade pip
-"$REMOTE/venv/bin/pip" install -q -r "$REMOTE/requirements.txt"
+if [ -d "$REMOTE/../bee-cli-python" ]; then
+  "$REMOTE/venv/bin/pip" install -q "$REMOTE/../bee-cli-python"
+  grep -v '^bee-cli-python' "$REMOTE/requirements.txt" > /tmp/ml-req.txt
+  "$REMOTE/venv/bin/pip" install -q -r /tmp/ml-req.txt
+else
+  "$REMOTE/venv/bin/pip" install -q -r "$REMOTE/requirements.txt"
+fi
 
 render() { sed -e "s|__NAME__|$NAME|g" -e "s|__PORT__|$PORT|g" -e "s|__REMOTE__|$REMOTE|g" -e "s|__DOMAIN__|$DOMAIN|g" "$1"; }
 

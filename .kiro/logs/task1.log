@@ -1,0 +1,121 @@
+Let me read all the relevant files first.
+[tool] Reading product.md:1, tech.md:1, structure.md:1
+[tool] status: Completed
+[tool] Reading requirements.md:1, design.md:1, tasks.md:1
+[tool] status: Completed
+Now let me read the existing code files I need to understand before implementing:
+[tool] Reading main.py:1, config.py:1
+[tool] status: Completed
+[tool] Reading family.html:1, test_app.py:1
+[tool] status: Completed
+Now I have a thorough picture of the codebase. Let me read `service.py` and `store.py` to understand the existing patterns:
+[tool] Reading service.py:1-60, store.py:1-40
+[tool] status: Completed
+[tool] Reading store.py:41-140
+[tool] status: Completed
+Now I have enough context. Let me understand exactly what task 1 requires:
+
+1. Create `web/notice.html` — a one-screen notice in Nepali and English
+2. Add a `GET /notice` route in `app/main.py`
+3. Add a "Show visitors the notice" link in `web/family.html` header
+4. Add a test in `tests/test_app.py`
+
+Let me check `config.py` for `PARENT_NAME` and language settings, and look at `how.html` for page style reference:
+[tool] Reading how.html:1-80
+[tool] status: Completed
+Now I have everything I need. Let me create the notice page, add the route, update the family page header, and add the test.
+[tool] Creating task list: Implement task 1 of consent-and-control spec: /notice page
+[tool] status: Completed
+**Step 1: Create `web/notice.html`**
+
+The design says: same type scale and light theme as the evening screen (Mukta, large), Nepali and English wording, fits on a phone (390×844) without scrolling, and on the 1280×800 evening screen.
+[tool] Creating notice.html
+[tool] status: Completed
+[tool] Completing #1
+[tool] status: Completed
+**Step 2: Add `GET /notice` route in `app/main.py`**
+
+I'll add it right after the `/how` route, keeping the same pattern:
+[tool] Editing main.py
+[tool] status: Completed
+[tool] Completing #2
+[tool] status: Completed
+**Step 3: Add "Show visitors the notice" link to `family.html` header**
+
+The requirement says: `The family page header SHALL link to it ("Show visitors the notice")` and `The family page header SHALL show "Recording with Bee · tell the people she talks to" with a link to /notice`.
+
+Looking at the current header bar in `family.html`, I'll add the notice link to the `.bar` div that has the action buttons, alongside the existing "Open the evening screen" and "How it works" links. I'll also update the header per requirement 4.1 — add a recording note with the notice link near the top.
+
+Let me look at the exact header section more carefully:
+[tool] Searching for 'Recording with Bee|tell the people|Show visitors' in family.html
+[tool] status: Completed
+These aren't in the file yet. The requirements say:
+- Req 1.3: The family page SHALL link to it ("Show visitors the notice")
+- Req 4.1: The family page header SHALL show "Recording with Bee · tell the people she talks to" with a link to /notice
+
+I'll add a small notice banner in the header area and the "Show visitors the notice" button in the action bar. Looking at the current header:
+
+```html
+<header>
+  <div>
+    <h1>Memory Lane <span>· Family</span></h1>
+    <p class="sub" id="sub">...</p>
+  </div>
+  <div class="bar" id="chips"></div>
+</header>
+<div class="bar">
+  <button ...>Sync from Bee</button>
+  ...
+</div>
+```
+
+I'll add the "Recording with Bee" note as a line in the header's left div, and add the "Show visitors the notice" link in the action bar:
+[tool] Editing family.html
+[tool] status: Completed
+[tool] Completing #3
+[tool] status: Completed
+**Step 4: Add `test_notice_page` to `tests/test_app.py`**
+
+The design says the test should check: `/notice returns 200 and contains both languages`.
+
+I'll add it right after `test_pages_and_health` in the "pages, health, sync" section, since it's a page test. I need to check that the response is 200 and contains key text from both the Nepali and English sections:
+[tool] Editing test_app.py
+[tool] status: Completed
+Let me verify the test looks right by checking it in context:
+[tool] Searching for 'test_notice_page|test_pages_and_health' in test_app.py
+[tool] status: Completed
+[tool] Reading test_app.py:59-83
+[tool] status: Completed
+Good. Let me also verify the notice.html actually contains all those strings:
+[tool] Searching for 'नमस्ते|परिवार|Hi!|listening|family' in notice.html
+[tool] status: Completed
+[tool] Searching for 'Hi!|listening|family' in notice.html
+[tool] status: Completed
+All strings are present: `नमस्ते`, `Bee`, `परिवार`, `Hi!`, `listening`, `family`. 
+
+Now let me also verify the route in `main.py`:
+[tool] Searching for 'notice' in main.py
+[tool] status: Completed
+[tool] Completing #4
+[tool] status: Completed
+**Step 5: Mark task 1 complete in `tasks.md`**
+[tool] Editing tasks.md
+[tool] status: Completed
+[tool] Completing #5
+[tool] status: Completed
+Let me do a final sanity-check to confirm everything is in order:
+[tool] Reading tasks.md:1, main.py:85-94
+[tool] status: Completed
+Everything looks correct. Here's a summary of the 4 files changed for task 1:
+
+**Files changed:**
+
+- `web/notice.html` — new page: a single-screen card in Mukta/large type showing the Nepali notice (`नमस्ते! मेरो घडीमा Bee ले...`) and its English translation (`Hi! Bee on my watch is listening...`). Uses the same light theme/font as the rest of the app; fits on both a phone (390×844) and the 1280×800 evening screen via `clamp()` font sizes and a centred flex layout.
+
+- `app/main.py` — added `GET /notice` route after `/how`, returning the new page.
+
+- `web/family.html` — added "Recording with Bee · tell the people she talks to" (with `/notice` link) in the header subtitle, and a "Show visitors the notice ↗" button in the action bar.
+
+- `tests/test_app.py` — added `test_notice_page` after `test_pages_and_health`: asserts 200 status and checks for key Nepali strings (`नमस्ते`, `परिवार`) and English strings (`Hi!`, `listening`, `family`).
+
+- `.kiro/specs/consent-and-control/tasks.md` — checkbox for task 1 changed from `[ ]` to `[x]`.

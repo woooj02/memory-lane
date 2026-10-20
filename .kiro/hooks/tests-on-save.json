@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Tests on save",
+      "description": "Run the offline test suite whenever Python code changes, and stop on the first failure.",
+      "trigger": "PostFileSave",
+      "matcher": "(app|tests)/.*\\.py$",
+      "action": { "type": "command", "command": "./run.sh test -x -q" },
+      "timeout": 120
+    }
+  ]
+}

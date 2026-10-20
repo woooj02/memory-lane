@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How Memory Lane Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap">
+<style>
+/* One page that shows the whole path from a spoken line to a practised memory,
+   with the live numbers from this running instance. */
+:root{
+  --bg:#f8f7f3; --panel:#ffffff; --panel2:#f1efe8; --line:#d9d5ca; --ink:#16203a; --muted:#46506b; --dim:#6a728a;
+  --marigold:#9a5200; --leaf:#1b7a51; --sky:#1f5fbf; --rhodo:#b8323c;
+  --f:"Mukta","Noto Sans Devanagari",system-ui,sans-serif; --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:19px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right)) 64px max(16px,env(safe-area-inset-left));display:grid;gap:28px}
+h1{margin:0;font-size:clamp(30px,4vw,46px);font-weight:800;line-height:1.1;text-wrap:balance}
+h1 span{color:var(--marigold)}
+.lead{margin:6px 0 0;color:var(--muted);font-size:19px;max-width:70ch}
+h2{margin:0 0 10px;font-size:20px}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;position:relative}
+@media (max-width:900px){.flow{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--panel);border:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.04);border-radius:16px;padding:16px;display:grid;gap:10px;align-content:start;position:relative;min-width:0}
+.stage::after{content:"→";position:absolute;right:-14px;top:22px;width:14px;text-align:center;color:var(--marigold);font-weight:800}
+.stage:last-child::after{display:none}
+@media (max-width:900px){.stage::after{content:"↓";right:auto;left:22px;top:auto;bottom:-22px}}
+.step{font:700 12px var(--mono);color:var(--marigold);letter-spacing:.08em}
+.stage h3{margin:0;font-size:20px;line-height:1.2}
+.stage p{margin:0;color:var(--muted);font-size:17px}
+.calls{display:grid;gap:4px}
+code{font:14px var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--ink);overflow-wrap:anywhere}
+.num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.num small{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-top:2px}
+.nums{display:flex;gap:18px;flex-wrap:wrap}
+.c-bee .num{color:var(--sky)} .c-ai .num{color:var(--marigold)} .c-cards .num{color:var(--leaf)} .c-eve .num{color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px;min-width:0}
+.tool{display:grid;gap:2px;padding:8px 0;border-top:1px solid var(--line)}
+.tool:first-of-type{border-top:0}
+.tool b{font:700 14px var(--mono);color:var(--marigold)}
+.tool span{color:var(--muted);font-size:17px}
+ul{margin:0;padding-left:20px;display:grid;gap:8px}
+li b{color:var(--ink)}
+li{color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td{padding:6px 0;border-top:1px solid var(--line)}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.chip{display:inline-block;font-size:13px;font-weight:600;border-radius:999px;padding:2px 10px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.ladder{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:15px;color:var(--muted)}
+.ladder b{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:2px 10px;color:var(--leaf);font-variant-numeric:tabular-nums}
+a{color:var(--marigold)}
+/* A 4K screen where the browser doesn't scale (common on Linux) lays this out at 3840 CSS px: scale it up. */
+@media (min-width:2400px){body{zoom:1.8}}
+@media (min-width:1800px) and (max-width:2399px){body{zoom:1.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Her day, given back to her, <span>in her own language</span></h1>
+    <p class="lead">Memory Lane turns the conversations Bee captures into a few evening questions in the parent's own language, each tied to the exact words that were said. What she promises out loud lands in Bee as a reminder while she's still talking, and her family follows every line in English.</p>
+    <p class="lead" id="mode" style="font-size:15px"></p>
+  </header>
+
+  <section class="flow" aria-label="Pipeline">
+    <div class="stage c-bee">
+      <span class="step">1 · CAPTURE</span>
+      <h3>Bee on her Apple Watch</h3>
+      <p>Records her day. Live lines stream in as she speaks; finished conversations, Bee's facts about her and her photos are read after.</p>
+      <div class="calls"><code>bee stream --json</code><code>bee conversations get</code><code>bee facts list</code><code>bee photos list</code></div>
+      <div class="nums"><div class="num" id="n-lines">–<small>lines heard</small></div><div class="num" id="n-conv">–<small>conversations</small></div></div>
+    </div>
+    <div class="stage c-ai">
+      <span class="step">2 · UNDERSTAND</span>
+      <h3 id="ai-name">The AI step</h3>
+      <p>Translates every line into English, names the speakers using what Bee already knows, and picks what's worth remembering. Live: a fast model catches promises within seconds. Every answer follows a JSON schema.</p>
+      <div class="calls"><code id="model">model</code></div>
+      <div class="nums"><div class="num" id="n-live">–<small>reminders set live</small></div><div class="num" id="n-skip">–<small>too short, skipped</small></div></div>
+    </div>
+    <div class="stage c-cards">
+      <span class="step">3 · QUESTIONS</span>
+      <h3>Grounded practice cards</h3>
+      <p>Up to 3 per conversation, each with a hint, an answer and the exact lines it came from, plus "who were you with?" from her photos. Health questions wait for family approval.</p>
+      <div class="nums"><div class="num" id="n-cards">–<small>questions</small></div><div class="num" id="n-pending">–<small>waiting for OK</small></div></div>
+    </div>
+    <div class="stage c-eve">
+      <span class="step">4 · EVENING</span>
+      <h3>Alexa+ add-on (MCP)</h3>
+      <p>Six questions a night on an Echo Show style screen, in the order the day happened, read aloud (in a family member's voice if they recorded it). Promises and facts go back to Bee.</p>
+      <div class="calls"><code>POST /mcp · 2025-11-25</code><code>bee todos create --alarm-at</code><code>bee facts create</code></div>
+      <div class="nums"><div class="num" id="n-rev">–<small>answers</small></div><div class="num" id="n-rem">–<small>reminders in Bee</small></div></div>
+    </div>
+  </section>
+
+  <section class="two">
+    <div class="box">
+      <h2>MCP tools <span class="chip">Streamable HTTP · protocol 2025-11-25</span></h2>
+      <div id="tools"><p class="lead" style="font-size:15px">Loading from the live server…</p></div>
+    </div>
+    <div style="display:grid;gap:18px;align-content:start">
+      <div class="box">
+        <h2>Bee calls this run</h2>
+        <table id="calls"><tr><td>–</td><td></td></tr></table>
+      </div>
+      <div class="box">
+        <h2>Spacing</h2>
+        <p class="ladder">Remembered → comes back in <b>2</b><b>4</b><b>7</b><b>14</b> days, then every 14. With a hint, or forgotten → tomorrow.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>Design choices</h2>
+    <ul>
+      <li><b>Her words, not the model's.</b> Every question cites the transcript lines it came from, and the answer screen replays those lines. Cards without evidence are dropped.</li>
+      <li><b>Health waits for family.</b> Anything about medicine, doses or symptoms is only asked after a family member checks it against what the doctor said. The model never adds advice.</li>
+      <li><b>Her language first.</b> Questions, hints and answers are in Nepali with respectful forms; English is for the family and is always shown beside the original.</li>
+      <li><b>Private by default.</b> Any conversation can be kept private: no questions, nothing shown. With real data the server requires an access token.</li>
+      <li><b>She keeps her word.</b> A promise said out loud becomes a Bee reminder within seconds, with an Undo for the family. The evening digest links it instead of suggesting it twice.</li>
+      <li><b>Bee learns her world.</b> Facts Bee knows ("Kamala is my sister") name the people in her conversations; new lasting facts are saved back to Bee only when the family approves.</li>
+      <li><b>Open source.</b> Bee data comes through <a href="https://github.com/woooj02/bee-cli-python">bee-cli-python</a>, a Python client we built for every Bee CLI command, with typed live events and a fake Bee for tests.</li>
+      <li><b>Built on open standards.</b> The evening screen is itself an MCP client, so any Alexa+ device or MCP host can run the same practice.</li>
+    </ul>
+  </section>
+  <p class="lead" style="font-size:15px"><a href="/family">Family page</a> · <a href="/?lang=both">Evening screen</a></p>
+</div>
+<script src="/static/mcp.js"></script>
+<script>
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const set = (id, v) => { const el = document.getElementById(id); el.firstChild.nodeValue = String(v); };
+async function stats(){
+  const s = await (await fetch("/api/stats")).json();
+  set("n-lines", s.lines); set("n-conv", s.conversations); set("n-skip", s.skipped);
+  set("n-cards", s.cards); set("n-live", s.live_reminders ?? 0); set("n-pending", s.pending); set("n-rev", s.reviews); set("n-rem", s.reminders);
+  const AI = { together: "Together AI (open models)", bedrock: "Claude on Amazon Bedrock", anthropic: "Claude API", mock: "Offline sample digests" };
+  document.getElementById("ai-name").textContent = AI[s.ai] || s.ai;
+  document.getElementById("model").textContent = s.ai === "mock" ? "offline sample digests" : `${AI[s.ai] || s.ai} · ${s.model}`;
+  document.getElementById("mode").textContent = `This instance: ${s.bee === "cli" ? "live Bee account" : "sample day"} · ${s.ai === "mock" ? "offline AI samples" : AI[s.ai] || s.ai}`;
+  const rows = Object.entries(s.bee_calls).sort((a, b) => b[1] - a[1]);
+  document.getElementById("calls").innerHTML = rows.length ? rows.map(([k, v]) => `<tr><td><code>bee ${esc(k)}</code></td><td>${v}</td></tr>`).join("")
+    : `<tr><td>No calls yet. Sync on the family page.</td><td></td></tr>`;
+}
+async function tools(){
+  await MCP.init();
+  const list = (await MCP.tools()).tools;
+  document.getElementById("tools").innerHTML = list.map((t) => `<div class="tool"><b>${esc(t.name)}</b><span>${esc((t.description || "").split(". ")[0].replace(/\.$/, ""))}.</span></div>`).join("");
+}
+stats(); tools(); setInterval(stats, 5000);
+</script>
+</body>
+</html>

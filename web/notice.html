@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory Lane · Notice for Visitors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap">
+<style>
+/* Notice card: large type, light theme, fits 390×844 and 1280×800 without scrolling. */
+:root{
+  --bg:#f8f7f3; --panel:#ffffff; --ink:#16203a; --muted:#46506b; --line:#d9d5ca; --soft:#f1efe8;
+  --marigold:#b86e00; --marigold-bg:#f3a833; --marigold-soft:#fff1d9;
+  --f:"Mukta","Noto Sans Devanagari",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--f);
+  /* vertically center on large screens, top-align on small */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:env(safe-area-inset-top,16px) max(16px,env(safe-area-inset-right)) env(safe-area-inset-bottom,16px) max(16px,env(safe-area-inset-left));
+  min-height:100%;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:32px 36px;
+  max-width:560px;
+  width:100%;
+  display:grid;
+  gap:28px;
+}
+/* On the 1280×800 evening screen, center horizontally in the full width */
+@media (min-width:900px){
+  .card{max-width:640px}
+}
+.watch{
+  font-size:56px;
+  line-height:1;
+  text-align:center;
+}
+.block{display:grid;gap:10px}
+.label{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.ne{
+  font-size:clamp(24px,5vw,32px);
+  font-weight:700;
+  line-height:1.4;
+  color:var(--ink);
+}
+.en{
+  font-size:clamp(18px,3.5vw,22px);
+  font-weight:500;
+  line-height:1.45;
+  color:var(--muted);
+}
+hr{border:0;border-top:1px solid var(--line);margin:0}
+.footer{
+  font-size:14px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.footer a{
+  color:var(--marigold);
+  text-decoration:none;
+  font-weight:600;
+}
+.footer a:hover{text-decoration:underline}
+/* 4K scaling (matches family page) */
+@media (min-width:2400px){body{zoom:1.8}}
+@media (min-width:1800px) and (max-width:2399px){body{zoom:1.3}}
+</style>
+</head>
+<body>
+<div class="card" role="main">
+  <div class="watch" aria-hidden="true">⌚</div>
+
+  <div class="block">
+    <span class="label">नेपाली</span>
+    <p class="ne" lang="ne">
+      नमस्ते! मेरो घडीमा Bee ले हाम्रो कुराकानी सुन्छ, ताकि बेलुका मलाई दिनभरिको कुरा सम्झन मद्दत होस्।
+      यो मेरो परिवारले मात्र हेर्छ।
+      तपाईं चाहनुहुन्न भने भन्नुस्, म रोकिदिन्छु।
+    </p>
+  </div>
+
+  <hr>
+
+  <div class="block">
+    <span class="label">English</span>
+    <p class="en" lang="en">
+      Hi! Bee on my watch is listening to our conversation, to help me remember my day in the evening.
+      Only my family sees it.
+      If you'd rather not, just say so and I'll stop it.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Memory Lane · सम्झना</span>
+    <a href="/family">← Family page</a>
+  </div>
+</div>
+</body>
+</html>

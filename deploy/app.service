@@ -8,6 +8,8 @@ Type=simple
 WorkingDirectory=__REMOTE__
 # Optional (leading dash): with no .env the app runs on the mock engine.
 EnvironmentFile=-__REMOTE__/.env
+# The MCP endpoint only answers requests addressed to known hosts (DNS-rebinding guard).
+Environment=MCP_ALLOWED_HOSTS=__DOMAIN__
 ExecStart=__REMOTE__/venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port __PORT__ --workers 1
 Restart=always
 RestartSec=2

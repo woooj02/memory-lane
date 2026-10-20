@@ -1,0 +1,103 @@
+[tool] Creating task list: Implement Task 4 of consent-and-control spec in Memory Lane
+[tool] status: Completed
+[tool] Reading requirements.md:1, design.md:1, tasks.md:1
+[tool] status: Completed
+[tool] Reading store.py:1, service.py:1
+[tool] status: Completed
+[tool] Reading main.py:1, family.html:1
+[tool] status: Completed
+[tool] Reading test_app.py:1
+[tool] status: Completed
+[tool] Completing #1, #2
+[tool] status: Completed
+[tool] Completing #3
+[tool] status: Completed
+Now I have a complete picture. Let me implement all the changes.
+
+**Step 1: `app/store.py`** — add `delete_conversation()`, update queries to exclude `status='deleted'`
+[tool] Editing store.py
+[tool] status: Completed
+[tool] Editing store.py
+[tool] status: Completed
+Now update `due_cards`, `pending_cards`, `promises`, and `facts` to exclude `status='deleted'` conversations:
+[tool] Editing store.py
+[tool] status: Completed
+[tool] Editing store.py
+[tool] status: Completed
+[tool] Editing store.py
+[tool] status: Completed
+[tool] Editing store.py
+[tool] status: Completed
+**Step 2: `app/service.py`** — add `delete_conversation()` method and skip `status='deleted'` in `sync()`
+[tool] Editing service.py
+[tool] status: Completed
+Wait, I need to look more carefully at the sync logic. The tombstone check must happen before the `redo` check:
+[tool] Editing service.py
+[tool] status: Completed
+Now add `delete_conversation()` to `MemoryLane`. I'll add it right after `set_private`:
+[tool] Editing service.py
+[tool] status: Completed
+**Step 3: `app/main.py`** — add the `DELETE /api/conversations/{cid}` route
+[tool] Editing main.py
+[tool] status: Completed
+**Step 4: `web/family.html`** — add inline confirm UI for deleting a conversation
+
+I need to:
+1. Add CSS for the inline confirm row
+2. Add a "Delete" button in `convHTML()`
+3. Handle the `data-del-conv` and inline confirm logic in the click handler
+
+First, add the CSS for the inline confirm row. I'll add it after the existing `.pause-status` styles:
+[tool] Editing family.html
+[tool] status: Completed
+Now add the "Delete" button and inline confirm row to the conversation HTML. I'll add it inside `convHTML()`, after the private switch in the `conv-head`. The cleanest place is at the bottom of the article, just before closing `</article>`:
+[tool] Editing family.html
+[tool] status: Completed
+Now add the inline confirm row to the article. Add it right before `</article>`:
+[tool] Editing family.html
+[tool] status: Completed
+Now add the click-handler logic for `data-del-conv`, `data-del-conv-confirm`, and `data-del-conv-cancel`:
+[tool] Editing family.html
+[tool] status: Completed
+Now I need to check how `dataset` camelCase maps from HTML attributes. `data-del-conv` → `dataset.delConv`. Let me verify this is correct — the attribute `data-del-conv` in JS becomes `dataset.delConv`. Yes, that's the standard HTML5 camelCase conversion. ✓
+
+**Step 5: Add tests to `tests/test_app.py`**
+
+Now let me add the Task 4 tests at the end of the file:
+[tool] Editing test_app.py
+[tool] status: Completed
+Now there's an issue to consider: the `test_delete_conversation_route` test deletes one conversation from the shared `client`/`synced` module-scoped fixture, which could affect other tests. Looking at the test order and what the other tests depend on, `test_delete_conversation_route` picks `convs[-1]["id"]` — let me check which conversation that would be. The sample day has conversations 101–105. Conversation 105 is skipped. The day endpoint returns non-deleted ones. But after `test_delete_conversation_route` runs, it removes that conversation.
+
+The problem is the module-scoped `synced` fixture — other tests like `test_day_has_speakers_translations_and_cards` check for specific conversation ids. But since `test_delete_conversation_route` uses `convs[-1]["id"]` it will pick whatever is last. Let me be more careful and delete conversation 105 (which is skipped and has no cards/promises) — but 105 is "skipped" not in the non-deleted list from the API...
+
+Actually wait — `conversations()` in the store filters `status!='deleted'`. The `day()` API calls `store.conversations()` which will return all statuses except `deleted`, including skipped ones. So 105 would be in the list. But now the test picks `convs[-1]["id"]` which could be 105 (skipped). Let me instead pick a specific conversation ID to be safe, avoiding ones that other tests depend on. Actually, the safest approach is to use `tmp_path` based fresh lanes for the critical checks, and avoid the shared `client` for the delete route test — but I do need to test the HTTP route. Let me use conversation 104 (the last digested one) but check that the remaining tests don't depend on 104...
+
+Looking at the existing tests, conversations 101, 102, 103 are referenced by test_day_has_speakers_translations_and_cards (checks 101, 102), test_health_questions_wait_for_family (102), test_evening_practice_over_mcp (uses 101, 102, 103, 104 in order). The `test_delete_conversation_route` runs AFTER all these since it's defined last. But with the module-scope client, once it deletes, it affects subsequent tests.
+
+Since the route test is at the bottom, and the only subsequent tests are `test_delete_conversation_unknown_is_404` and `test_mcp_todays_conversations_excludes_deleted` (which uses tmp_path), it should be fine. And `test_delete_conversation_route` deletes `convs[-1]["id"]` — but after `test_delete_conversation_route` itself runs, `test_delete_conversation_unknown_is_404` just tests a 404 which doesn't care about existing conversations. So it's safe.
+
+But wait — I need to double-check that `test_delete_conversation_route` doesn't break the `test_stats_count_bee_calls` or other tests. Looking at the test file, Python runs tests in order of definition, and the delete route test is at the very end. The `synced` fixture syncs once at module scope, so after my route test deletes a conversation, any test that re-checks the day would be affected. But all earlier tests already ran. Only `test_delete_conversation_unknown_is_404` follows, and it doesn't need the conversation. Safe. ✓
+
+Now let me also check one edge case in `store.py` — the `Store.conversation()` method is used by `delete_conversation()` in service.py to verify the conversation exists. But `Store.conversation()` does a plain query without status filter, which is correct since we need it to check the tombstone too. Let me verify:
+[tool] Searching for 'def conversation\(self' in store.py
+[tool] status: Completed
+[tool] Reading store.py:133-137
+[tool] status: Completed
+Good — `conversation(cid)` (singular, used by the sync check) does NOT filter by status, so it correctly finds tombstones. The `conversations(day)` (plural, used by `day()`) now filters out `deleted`. ✓
+
+But there's a subtle issue: `service.MemoryLane.delete_conversation()` calls `self.store.conversation(cid)` which returns the row (including tombstones). For a non-existent conversation it returns `None` → raises `KeyError`. For a tombstone (`status='deleted'`), it returns the tombstone and tries to delete again — that's harmless but redundant. The design says "keep a tombstone", so deleting twice is idempotent. Let me make the service method also skip if already deleted to give a cleaner 404:
+[tool] Editing service.py
+[tool] status: Completed
+Now let me also verify the `mcp_server.py` to confirm `todays_conversations` uses `lane.day()` or `store.conversations()`, ensuring it will naturally respect our filter:
+[tool] Searching for 'todays_conversations|conversations' in mcp_server.py
+[tool] status: Completed
+`todays_conversations` uses `lane.day()` which calls `store.conversations()` — so it will already exclude `deleted` conversations after our fix. ✓
+
+Now let me do a final review of all the changes by reading the modified sections:
+[tool] Reading store.py:131-250
+[tool] status: Completed
+I notice there's a dead code block (the `for r in card_rows: # voice column: fetch it separately / pass` section). Let me clean that up:
+[tool] Editing store.py
+[tool] status: Completed
+
+Error: Internal error (code -32603): Encountered an error in the response stream: The request was throttled by the service (request_id: 1901bfe1-1ed3-45dc-8a38-12052c5fff02)

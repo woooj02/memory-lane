@@ -1,0 +1,109 @@
+Let me read the affected area first to see exactly what happened:
+[tool] Reading service.py:239-258
+[tool] status: Completed
+Confirmed — line 246 has two statements joined. Fix it:
+[tool] Editing service.py
+[tool] status: Completed
+Now let me audit every part of Task 4 to confirm all pieces are in place:
+[tool] Reading store.py:131-330
+[tool] status: Completed
+Store looks good. Let me check service.py around the sync and delete_conversation:
+[tool] Reading service.py:226-260, service.py:379-388
+[tool] status: Completed
+Another mangled line — `start_sync` definition has the `replay_demo` body appended. Let me see more context:
+[tool] Reading service.py:258-297
+[tool] status: Completed
+Good — `start_sync` is fine. The `start_sync` line I saw before was just grep-style display issue. Let me look at the line that appeared oddly:
+[tool] Searching for 'def start_sync.*self\.live|replay_demo.*self\.job' in service.py
+[tool] status: Completed
+[tool] Searching for 'def \w.*\) -> .*:.*[^ ] ' in service.py
+[tool] status: Completed
+[tool] Reading service.py:369-408
+[tool] status: Completed
+[tool] Reading service.py:409-423
+[tool] status: Completed
+Good. Now check main.py for the DELETE route:
+[tool] Searching for 'delete_conversation|DELETE.*conversations' in main.py
+[tool] status: Completed
+Good. Now check family.html for the inline confirm UI:
+[tool] Searching for 'del-conv|del_conv|delConv|dc\$\{' in family.html
+[tool] status: Completed
+[tool] Searching for 'delConvConfirm|delConvCancel' in family.html
+[tool] status: Completed
+Good. Now check that the `.del-confirm` CSS is there:
+[tool] Searching for 'del-confirm' in family.html
+[tool] status: Completed
+Now check the tests were added correctly:
+[tool] Searching for '^def test_delete' in test_app.py
+[tool] status: Completed
+[tool] Searching for '^def test_(resync|mcp_todays|delete_photo|delete_conversa...' in test_app.py
+[tool] status: Completed
+All 9 test functions are present (8 new for task 4, plus the pre-existing `test_deleted_card_drops_out_of_a_started_plan`). Let me now do a final read of the test section and the `test_delete_conversation_route` to make sure its logic is sound given that it runs against the module-scoped `client` and shares the `synced` fixture:
+[tool] Reading test_app.py:855-1009
+[tool] status: Completed
+[tool] Reading test_app.py:1010-1014
+[tool] status: Completed
+Good — file ends cleanly. Now let me check the `test_delete_removes_cards_reviews_promises_facts` test — it calls `lane2.store.conversation(cid)` after deletion and asserts `tomb is None`. But `Store.conversation()` does a plain SELECT without a status filter — it will still return the tombstone row. Let me recheck:
+[tool] Searching for 'def conversation\(self.*\).*:$' in store.py
+[tool] status: Completed
+`Store.conversation(cid)` returns `_one("SELECT * FROM conversations WHERE id=?")` — **no status filter**. So after deletion it will return the tombstone row, not `None`.
+
+The test has:
+```python
+tomb = lane2.store.conversation(cid)
+assert tomb is None, "deleted conv must not appear via conversations(day)"
+```
+
+This assertion is **wrong** — `store.conversation(cid)` will return the tombstone. The comment says "via conversations(day)" but the call is `conversation(cid)`. I need to fix this test assertion. The correct check is:
+- `store.conversation(cid)` returns the tombstone (not None)
+- `store.conversations(day)` (which filters deleted) would not include it
+[tool] Editing test_app.py
+[tool] status: Completed
+Now check another potential issue: `test_resync_does_not_restore_deleted` calls `lane2.sync(redo=True)` after deletion. The tombstone still has the original `day` field, so `list_conversations` returns its id, then our guard `if known and known["status"] == "deleted": continue` skips it. But `store.conversation(cid)` is called via the unfiltered query — it will find the tombstone. Then `raw = lane2.store._one("SELECT * FROM conversations WHERE id=?", (cid,))` returns it. That assertion is fine.
+
+However, there's a subtlety: the DemoBee's `list_conversations` returns all 5 demo conversations including id 101. But in `sync()`, deleted tombstones are skipped via `store.conversation()` (no status filter) returning the tombstone row with `status='deleted'`. That guard is correct. ✓
+
+Let me also check if `test_delete_conversation_route` could create a problem: it deletes `convs[-1]["id"]` from the shared `client`. The sample day has convs 101-105. Conversation 105 is skipped, so after the previous `synced` fixture runs, the `/api/day` endpoint (which filters `status!='deleted'`) returns convs 101-104 (105 is skipped, not deleted, so it IS returned). So `convs[-1]["id"]` would be 105 if 105 appears, or 104 otherwise. Let me trace this more carefully.
+
+Looking at `test_sync_digests_the_sample_day`: `synced["digested"] == 4 and synced["skipped"] == 1`. The skipped one is 105 (`test_day_has_speakers_translations_and_cards` confirms `convs[105]["status"] == "skipped"`).
+
+`store.conversations(day)` now filters `status!='deleted'` — but `skipped` is NOT `deleted`, so 105 would be in the results. So `convs[-1]["id"]` would be 105. Deleting 105 (a skipped conversation with no cards or promises) is safe and won't affect other tests. ✓
+
+But wait — `test_day_has_speakers_translations_and_cards` checks `convs[105]["status"] == "skipped"` BEFORE our delete test runs (delete runs at the end). So that's fine.
+
+One more check: the `test_delete_conversation_route` and `test_delete_conversation_unknown_is_404` both depend on `synced`. But after `test_delete_conversation_route` runs and deletes conv 105, `test_delete_conversation_unknown_is_404` calls DELETE on 99999 which doesn't exist → should get 404 from `_guard` wrapping `lane.delete_conversation`. Let me verify the 404 path:
+
+In `service.py`:
+```python
+def delete_conversation(self, cid: int) -> None:
+    conv = self.store.conversation(cid)
+    if not conv or conv["status"] == "deleted":
+        raise KeyError(f"no conversation {cid}")
+```
+
+`store.conversation(99999)` returns `None` → raises `KeyError` → `_guard` converts to 404. ✓
+
+Also, after `test_delete_conversation_route` deletes conv 105, if `test_delete_conversation_unknown_is_404` tried to delete 105 again it would get 404. But it tests 99999, so it's fine. ✓
+
+Now mark task 4 done in tasks.md:
+[tool] Reading tasks.md:1
+[tool] status: Completed
+[tool] Editing tasks.md
+[tool] status: Completed
+[tool] Completing #4, #5, #6
+[tool] status: Completed
+[tool] Goal complete
+[tool] status: Completed
+**Summary of changes:**
+
+- **`app/service.py`**: Fixed the syntax error (split the mangled joined line back to two). Added `delete_conversation(cid)` method. Added tombstone guard in `sync()` so deleted conversations are never re-synced even with `redo=True`.
+
+- **`app/store.py`**: Added `Store.delete_conversation(cid)` — one transaction that deletes reviews, cards, promises, facts, removes photo/voice files from disk, wipes all text columns, and sets `status='deleted'` (keeping the row as a tombstone). Updated `conversations()`, `due_cards()`, `pending_cards()`, `promises()`, and `facts()` to filter out `status='deleted'`.
+
+- **`app/main.py`**: Added `DELETE /api/conversations/{cid}` route.
+
+- **`web/family.html`**: Added `.del-confirm` CSS, a "Delete" button on each conversation card, a hidden inline confirm row (with the Bee-copy message and Delete/Cancel), and three click-handler branches — no `confirm()` dialog anywhere.
+
+- **`tests/test_app.py`**: 8 new tests covering cards/reviews/promises/facts removal, tombstone persistence, exclusion from day/practice/promises/facts, re-sync resistance, HTTP route, 404 on unknown, MCP exclusion, and photo file cleanup.
+
+- **`.kiro/specs/consent-and-control/tasks.md`**: Task 4 checkbox marked `[x]`.

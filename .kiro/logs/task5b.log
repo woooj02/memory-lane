@@ -1,0 +1,17 @@
+Let me re-read the files I need since context was lost.
+[tool] Reading README.md:121-150, tasks.md:1
+[tool] status: Completed
+Good. Now I have everything I need. The screen-fit check: `notice.html` uses `clamp(24px…32px)` for Nepali and `clamp(18px…22px)` for English, with a `max-width:560px` card inside a flexbox that pads to 16px sides — fits 390 wide easily. The evening screen uses `fit()` in JS to zoom down if content overflows, and the CSS uses `clamp` throughout with `vh`-based sizing. Both are fine without any CSS changes.
+
+Now update the README and tick tasks.md:
+[tool] Editing README.md
+[tool] status: Completed
+[tool] Editing tasks.md
+[tool] status: Completed
+Done. Here's what changed:
+
+**README "Privacy and consent"** — replaced the old stub (which listed notice/pause/delete as "in progress") with descriptions of what now exists, in the same short bullet style as the rest of the file. The three new controls come first (notice, pause, delete), followed by the two that were already there (keep private, health, access token).
+
+**Screen fit** — no changes needed. `notice.html` uses `clamp` sizing and a `max-width:560px` card with 16px side padding, which sits comfortably inside 390px. The evening screen's `fit()` function already handles any overflow by zooming the stage down, so it's covered programmatically.
+
+**tasks.md** — task 5 ticked. All five tasks are now `[x]`.

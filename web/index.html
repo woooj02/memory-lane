@@ -1,131 +1,491 @@
 <!doctype html>
-<html lang="en">
+<html lang="ne">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>memory-lane</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>सम्झना · Memory Lane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap">
 <style>
-  :root {
-    --bg: #fafaf9; --panel: #ffffff; --ink: #1c1917; --muted: #78716c;
-    --line: #e7e5e4; --accent: #4f46e5; --accent-ink: #ffffff;
-    --ok: #15803d; --warn: #b45309; --err: #b91c1c; --code: #f5f5f4;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0c0a09; --panel: #1c1917; --ink: #f5f5f4; --muted: #a8a29e;
-      --line: #292524; --accent: #818cf8; --accent-ink: #0c0a09;
-      --ok: #4ade80; --warn: #fbbf24; --err: #f87171; --code: #292524;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; }
-  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
-  .tagline { color: var(--muted); margin: 0 0 28px; }
-  form { display: flex; gap: 8px; }
-  textarea { flex: 1; resize: vertical; min-height: 52px; padding: 12px 14px;
-             font: inherit; color: inherit; background: var(--panel);
-             border: 1px solid var(--line); border-radius: 10px; }
-  textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-  button { padding: 0 20px; font: inherit; font-weight: 600; border: 0;
-           border-radius: 10px; background: var(--accent); color: var(--accent-ink);
-           cursor: pointer; }
-  button:disabled { opacity: .5; cursor: progress; }
-  .examples { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 28px; }
-  .examples button { background: transparent; color: var(--muted); font-weight: 400;
-                     border: 1px solid var(--line); padding: 4px 10px; font-size: 14px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-          padding: 20px; margin-bottom: 16px; }
-  .answer { white-space: pre-wrap; font-size: 17px; }
-  .meta { color: var(--muted); font-size: 13px; margin-top: 12px; }
-  .step { border-top: 1px solid var(--line); padding: 10px 0; font-size: 14px; }
-  .step:first-of-type { border-top: 0; }
-  .step b { font-family: ui-monospace, monospace; }
-  pre { background: var(--code); padding: 8px 10px; border-radius: 6px; margin: 6px 0 0;
-        overflow-x: auto; font-size: 13px; }
-  .err { color: var(--err); }
-  .badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px;
-           border: 1px solid var(--line); color: var(--muted); }
-  .badge.mock { color: var(--warn); border-color: var(--warn); }
-  footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
-  @media (max-width: 520px) { form { flex-direction: column; } button { padding: 12px; } }
+/* The evening screen, read from across a room by someone in their sixties or
+   seventies. Light and high-contrast, very large type, one question at a time,
+   a ribbon that walks through the day in order, and marigold (Tihar garlands)
+   as the one accent. Any language the day was spoken in, with English beside it. */
+:root{
+  --bg:#f8f7f3; --panel:#ffffff; --panel2:#f1efe8; --line:#d9d5ca; --ink:#16203a; --muted:#46506b; --dim:#6a728a;
+  --accent:#9a5200;                       /* marigold, dark enough for text */
+  --marigold:#f2a531; --marigold-ink:#231400;
+  --leaf:#1b7a51; --leaf-ink:#ffffff; --leaf-soft:#e2f2ea;
+  --rhodo:#b8323c; --rhodo-soft:#fbe7e8;
+  --f:"Mukta","Noto Sans Devanagari",system-ui,sans-serif; --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:25px;line-height:1.4;display:flex;flex-direction:column;
+  padding:max(14px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.brand b{font-size:38px;font-weight:800;color:var(--accent)}
+.brand span{color:var(--muted);font-size:20px}
+.brand time{color:var(--ink);font-size:24px;font-weight:600}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.device{font-size:12px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;margin-right:4px}
+.pill{font:inherit;font-size:18px;font-weight:600;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+.pill[aria-pressed="true"]{color:var(--marigold-ink);background:var(--marigold);border-color:var(--marigold)}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:18px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:4px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* Day ribbon */
+.ribbon{margin:min(14px,1.6vh) auto 0;width:min(1140px,100%);position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px}
+.ribbon::before{content:"";position:absolute;left:0;right:0;top:16px;height:3px;background:var(--line);border-radius:2px}
+.stop{position:relative;display:grid;justify-items:center;gap:2px;text-align:center;min-width:0}
+.stop i{width:34px;height:34px;border-radius:50%;background:var(--bg);border:3px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:15px;font-weight:700;color:var(--dim)}
+.stop .t{font-size:20px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.stop .n{font-size:17px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stop.done i{border-color:var(--leaf);color:var(--leaf);background:var(--leaf-soft)}
+.stop.now i{border-color:var(--marigold);background:var(--marigold);color:var(--marigold-ink);box-shadow:0 0 0 7px rgba(242,165,49,.25)}
+.stop.now .t,.stop.now .n{color:var(--ink)}
+
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:min(10px,1.2vh) 0}
+.stage{width:min(1140px,100%);display:grid;gap:min(18px,2.1vh)}
+.kicker{color:var(--accent);font-size:clamp(22px,3.6vh,30px);font-weight:700;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0}
+.tag{font-size:18px;font-weight:700;border:2px solid var(--accent);border-radius:999px;padding:0 10px;color:var(--accent)}
+.q{font-size:clamp(38px,min(6.6vw,9.6vh),88px);font-weight:700;line-height:1.2;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:clamp(21px,min(2.6vw,3.7vh),31px);margin:0;line-height:1.35}
+.photo{display:block;width:100%;max-height:44vh;border-radius:18px;border:1px solid var(--line);box-shadow:0 6px 24px rgba(20,25,40,.12);object-fit:cover}
+.withphoto{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:min(32px,3vw);align-items:center}
+.withphoto>div{display:grid;gap:min(14px,1.6vh);align-content:center}
+.withphoto .q{font-size:clamp(34px,min(5.2vw,8vh),72px)}
+.withphoto.small{grid-template-columns:minmax(0,2fr) minmax(0,7fr)}
+.withphoto.small .photo{max-height:22vh}
+@media (max-width:760px){.withphoto{grid-template-columns:minmax(0,1fr)}}
+.answer{font-size:clamp(36px,min(5.6vw,8.2vh),72px);font-weight:800;color:var(--accent);margin:0;line-height:1.2}
+.answer.yes{color:var(--leaf)}
+.hint{font-size:clamp(30px,min(4.2vw,6vh),52px);font-weight:600;margin:0;border-left:8px solid var(--marigold);padding-left:20px}
+.source{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:min(16px,1.8vh) 22px;display:grid;gap:min(12px,1.4vh);box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.source h3{margin:0;font-size:17px;color:var(--dim);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.quote{display:grid;gap:2px}
+.quote .who{font-size:20px;color:var(--muted);font-weight:600}
+.quote .text{font-size:clamp(23px,3.9vh,33px)}
+.quote .tr{font-size:clamp(19px,2.9vh,23px);color:var(--muted)}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.btn{font:inherit;font-size:clamp(28px,min(3.6vw,5.6vh),44px);font-weight:700;border-radius:24px;padding:14px 26px;border:3px solid transparent;cursor:pointer;flex:1 1 230px;min-height:min(110px,13.5vh);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;position:relative;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.btn small{font-size:19px;font-weight:600;opacity:.9}
+.btn kbd{position:absolute;top:8px;right:12px;font:600 12px var(--mono);opacity:.5}
+.btn.yes{background:var(--leaf);color:var(--leaf-ink)}
+.btn.hint{background:var(--panel);color:var(--ink);border-color:var(--marigold)}
+.btn.no{background:var(--panel);color:var(--ink);border-color:var(--rhodo)}
+.btn.go{background:var(--marigold);color:var(--marigold-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.dots{display:flex;gap:8px;justify-content:center;align-items:center}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--line)}
+.dots i.d-remembered{background:var(--leaf)} .dots i.d-hint{background:var(--marigold)} .dots i.d-forgot{background:var(--rhodo)}
+.dots i.now{outline:3px solid var(--ink);outline-offset:2px}
+.score{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.big{font-size:clamp(80px,min(12vw,18vh),160px);font-weight:800;color:var(--accent);line-height:.95}
+.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px}
+@media (max-width:900px){.recap{grid-template-columns:minmax(0,1fr)}}
+.recap div{display:flex;gap:12px;align-items:baseline;font-size:clamp(20px,3.3vh,27px);min-width:0}
+.recap b{font-size:16px;font-weight:700;border-radius:999px;padding:1px 10px;white-space:nowrap;flex:none}
+.recap .r-remembered b{background:var(--leaf);color:var(--leaf-ink)}
+.recap .r-hint b{background:var(--marigold);color:var(--marigold-ink)}
+.recap .r-forgot b{background:var(--rhodo);color:#fff}
+.recap .sub{font-size:19px}
+.promise{display:flex;gap:14px;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:min(12px,1.4vh) 18px;flex-wrap:wrap}
+.promise p{margin:0;font-size:clamp(22px,3.6vh,29px);flex:1 1 300px;line-height:1.35}
+.promise .small{font-size:19px;color:var(--muted)}
+.promise button{font:inherit;font-size:22px;font-weight:700;border-radius:16px;padding:10px 18px;border:0;background:var(--marigold);color:var(--marigold-ink);cursor:pointer}
+.promise button:disabled{background:var(--leaf);color:var(--leaf-ink)}
+.err{color:var(--rhodo);font-size:19px}
+footer{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--dim);font-size:16px;flex-wrap:wrap}
+footer kbd{font:600 12px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 5px;background:var(--panel)}
+@media (max-height:760px){.quote+.quote{display:none}.source h3{display:none}}
+
+#log{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:min(540px,calc(100vw - 24px));max-height:52vh;overflow:auto;background:#0d1426;border:1px solid #2b3758;border-radius:14px;font:13px/1.45 var(--mono);color:#c9d2ea;box-shadow:0 20px 60px rgba(10,15,30,.35)}
+#log header{position:sticky;top:0;background:#111a30;padding:8px 12px;border-bottom:1px solid #2b3758;font-size:12px;color:#a9b2ca}
+#log header b{color:var(--marigold);font-weight:700}
+#log .e{border-bottom:1px solid #18213a;padding:8px 12px;display:grid;gap:3px}
+#log .m{color:var(--marigold);font-weight:700}
+#log .ms{color:#76809c}
+#log .res{color:#9fb0d8;white-space:pre-wrap;word-break:break-word}
+
+@media (prefers-reduced-motion:no-preference){
+  .stage>*{animation:in .35s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(8px)}}
+  .answer.yes{animation:pop .6s ease both}
+  @keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+}
+@media (max-width:760px){.ribbon .n{display:none}.device{display:none}}
 </style>
 </head>
 <body>
-<main>
-  <h1 id="name">memory-lane</h1>
-  <p class="tagline">One sentence: who this is for and what it does for them.</p>
+<header>
+  <div class="brand"><b id="brand">सम्झना</b><span id="brand2">Memory Lane</span><time id="today"></time></div>
+  <div class="tools">
+    <span class="device">Simulated Alexa+ · Echo Show</span>
+    <div class="seg" role="group" aria-label="Language" id="langs">
+      <button data-lang="parent" id="lang-parent">नेपाली</button>
+      <button data-lang="both">+ English</button>
+      <button data-lang="en">English</button>
+    </div>
+    <button class="pill" id="speak" title="Read aloud (R)">🔊</button>
+    <button class="pill" id="auto" aria-pressed="false" title="Read every screen aloud (V)">Auto</button>
+    <button class="pill" id="mcp" aria-pressed="false" title="Show the MCP calls (M)">MCP</button>
+  </div>
+</header>
+<nav class="ribbon" id="ribbon" aria-label="Today's conversations"></nav>
+<main><div class="stage" id="stage" aria-live="polite"><p class="sub">…</p></div></main>
+<footer><span id="foot1"></span><span class="dots" id="dots"></span><span id="foot2"></span></footer>
+<aside id="log" hidden aria-label="MCP calls"><header><b>MCP</b> · Streamable HTTP · protocol 2025-11-25 · POST /mcp</header><div id="logs"></div></aside>
 
-  <form id="f">
-    <textarea id="prompt" placeholder="Ask something…" required></textarea>
-    <button id="go">Run</button>
-  </form>
-  <div class="examples" id="examples"></div>
-
-  <div id="out"></div>
-
-  <footer><span class="badge" id="engine">…</span></footer>
-</main>
+<script src="/static/mcp.js"></script>
 <script>
-// The scripted demo prompts. Rehearse these with REPLAY=record.
-const EXAMPLES = [
-  "What's 2500 growing at 7% a year for 10 years?",
-  "What's today's date, and how many days until Dec 31?",
-];
+// ---------- language ----------
+// Every card is stored in the parent's language and in English, so the screen
+// can show either, or both. Modes: "parent", "both" (parent + English
+// subtitles), "en".
+const UI = {
+  ne: {
+    brand: "सम्झना", practice: "आजको सम्झना अभ्यास",
+    hello: (name, n) => `नमस्ते ${name}! आजको सम्झना अभ्यास: ${n} वटा प्रश्न।`,
+    none: (name) => `नमस्ते ${name}! आज अभ्यास गर्ने कुरा छैन। भोलि फेरि भेटौँ।`,
+    begin: "सुरु गरौँ", remember: "सम्झें", hint: "संकेत दिनुस्", forgot: "बिर्सें", nowRemember: "अब सम्झें",
+    next: "अर्को प्रश्न", finish: "सकियो", hintLabel: "संकेत", from: "आजको कुराकानीबाट", review: "दोहोर्‍याउने",
+    done: "आजको अभ्यास सकियो", scoreTail: (h) => `वटा आफैं सम्झनुभयो${h ? `, ${ne(h)} वटा संकेतले` : ""}।`,
+    promisesBtn: "तपाईंले भन्नुभएको कुरा", promisesTitle: "तपाईंले भन्नुभएको थियो", promisesAsk: "Bee मा सम्झाउने राखौँ?",
+    remind: "Bee मा सम्झाउनुस्", reminded: "Bee मा राखियो ✓",
+    praise: { remembered: "धेरै राम्रो!", hint: "सँगै सम्झियौँ।", forgot: "केही छैन, भोलि फेरि सोध्छु।" },
+    tag: { remembered: "सम्झनुभयो", hint: "संकेतले", forgot: "भोलि फेरि" },
+    today: "आज", tomorrow: "भोलि", oops: "केही मिलेन।",
+    foot: "आजका कुराकानीबाट प्रश्न · Bee", keys: "१ सम्झें · २ संकेत · ३ बिर्सें · N अर्को · R सुन्नुस्",
+    pod: (h) => h < 12 ? "बिहान" : h < 17 ? "दिउँसो" : h < 20 ? "बेलुका" : "राति",
+    week: ["आइतबार","सोमबार","मंगलबार","बुधबार","बिहीबार","शुक्रबार","शनिबार"],
+    month: ["जनवरी","फेब्रुअरी","मार्च","अप्रिल","मे","जुन","जुलाई","अगस्ट","सेप्टेम्बर","अक्टोबर","नोभेम्बर","डिसेम्बर"],
+    digits: true, voice: ["ne", "hi"],
+  },
+  en: {
+    brand: "Memory Lane", practice: "Tonight's memory practice",
+    hello: (name, n) => `Good evening, ${name}! Tonight: ${n} questions from your day.`,
+    none: (name) => `Good evening, ${name}! Nothing to practise tonight. See you tomorrow.`,
+    begin: "Let's begin", remember: "I remember", hint: "Give me a hint", forgot: "I forgot", nowRemember: "Now I remember",
+    next: "Next question", finish: "Done", hintLabel: "Hint", from: "From today's conversation", review: "review",
+    done: "Done for tonight", scoreTail: (h) => `remembered on your own${h ? `, ${h} with a hint` : ""}.`,
+    promisesBtn: "Things you said you'd do", promisesTitle: "You said you would", promisesAsk: "Shall I add reminders in Bee?",
+    remind: "Remind me in Bee", reminded: "Added to Bee ✓",
+    praise: { remembered: "Well done!", hint: "We remembered it together.", forgot: "That's fine, I'll ask again tomorrow." },
+    tag: { remembered: "remembered", hint: "with a hint", forgot: "tomorrow" },
+    today: "Today", tomorrow: "Tomorrow", oops: "Something went wrong.",
+    foot: "Questions from today's conversations · Bee", keys: "1 remember · 2 hint · 3 forgot · N next · R listen",
+    pod: (h) => h < 12 ? "Morning" : h < 17 ? "Afternoon" : h < 20 ? "Evening" : "Night",
+    week: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    month: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+    digits: false, voice: ["en"],
+  },
+};
+const DIG = "०१२३४५६७८९";
+const ne = (s) => String(s ?? "").replace(/[0-9]/g, (d) => DIG[d]);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const params = new URLSearchParams(location.search);
+const S = { mode: "parent", parentLang: "ne", parentName: "", parentNameEn: "Mom", state: null, card: null, shown: null,
+            result: null, rec: null, hintText: null, view: "start", day: [], promises: [], busy: false, keys: {}, say: "" };
+try { S.mode = localStorage.getItem("ml-mode") || "parent"; } catch (e) {}
+if (params.get("en") === "1") S.mode = "both";
+if (["parent", "both", "en"].includes(params.get("lang"))) S.mode = params.get("lang");
 
-const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const L = () => UI[S.mode === "en" ? "en" : (UI[S.parentLang] ? S.parentLang : "en")];   // main language
+const num = (n) => L().digits ? ne(n) : String(n);
+const pick = (parentText, enText) => S.mode === "en" ? (enText || parentText) : parentText;   // main text
+const subOf = (parentText, enText) => S.mode === "both" && enText && enText !== parentText ? enText : "";
+const sub = (parentText, enText) => { const t = subOf(parentText, enText); return t ? `<p class="sub">${esc(t)}</p>` : ""; };
+const name = () => S.mode === "en" ? S.parentNameEn : S.parentName;
 
-for (const ex of EXAMPLES) {
-  const b = document.createElement("button");
-  b.type = "button"; b.textContent = ex;
-  b.onclick = () => { $("prompt").value = ex; $("f").requestSubmit(); };
-  $("examples").append(b);
+function when(hhmm){
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  const h12 = h % 12 || 12, mm = String(m).padStart(2, "0");
+  return L().digits ? `${L().pod(h)} ${ne(h12)}:${ne(mm)}` : `${h12}:${mm} ${h < 12 ? "AM" : "PM"}`;
+}
+function dayName(d){ return `${L().week[d.getDay()]}, ${L().month[d.getMonth()]} ${num(d.getDate())}`; }
+function relDate(iso){
+  const d = new Date(iso + "T12:00");
+  if (isNaN(d)) return iso;
+  const t = new Date(); t.setHours(12, 0, 0, 0);
+  const days = Math.round((d - t) / 864e5);
+  return `${days === 0 ? L().today + " · " : days === 1 ? L().tomorrow + " · " : ""}${dayName(d)}`;
 }
 
-fetch("/api/health").then((r) => r.json()).then((h) => {
-  $("engine").textContent = `${h.engine === "mock" ? "mock engine" : h.model}${h.replay !== "off" ? " · replay " + h.replay : ""}`;
-  if (h.engine === "mock") $("engine").classList.add("mock");
-}).catch(() => { $("engine").textContent = "server unreachable"; });
+// ---------- chrome ----------
+const stage = document.getElementById("stage");
+function chrome(){
+  const u = L();
+  document.documentElement.lang = S.mode === "en" ? "en" : S.parentLang;
+  document.getElementById("brand").textContent = u.brand;
+  document.getElementById("brand2").textContent = S.mode === "en" ? "सम्झना" : "Memory Lane";
+  document.getElementById("today").textContent = dayName(new Date());
+  document.getElementById("foot1").textContent = u.foot;
+  document.getElementById("foot2").textContent = u.keys;
+  document.querySelectorAll("#langs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === S.mode));
+}
+function ribbon(currentConv){
+  const box = document.getElementById("ribbon");
+  if (!S.day.length) { box.innerHTML = ""; return; }
+  let passed = currentConv == null;
+  box.innerHTML = S.day.map((c, i) => {
+    const now = c.conversation_id === currentConv;
+    const done = currentConv === "done" || (!now && !passed);
+    if (now) passed = true;
+    return `<div class="stop${now ? " now" : ""}${done && !now ? " done" : ""}" title="${esc(c.title_en)}">
+      <i>${done && !now ? "✓" : num(i + 1)}</i><span class="t">${esc(when(c.time))}</span><span class="n">${esc(pick(c.title, c.title_en))}</span></div>`;
+  }).join("");
+}
+function dots(current){
+  const results = (S.state && S.state.results) || [];
+  const box = document.getElementById("dots");
+  box.innerHTML = results.map((r, i) => `<i class="${r ? "d-" + r : ""}${i === current ? " now" : ""}"></i>`).join("");
+}
+function setKeys(map){ S.keys = map; }
+// Read aloud: a question recorded by the family plays in their voice. Anything
+// else uses the device's voice for the language; few devices have Nepali, so a
+// Hindi voice (same Devanagari script) is the fallback.
+function speak(){
+  if (S.audio) { S.audio.pause(); S.audio = null; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (S.view === "question" && S.card && S.card.voice && S.mode !== "en") {
+    S.audio = new Audio(S.card.voice);
+    S.audio.play().catch(() => {});
+    return;
+  }
+  if (!("speechSynthesis" in window) || !S.say) return;
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length && !S.voiceWait) {   // Chrome loads its voices late
+    S.voiceWait = true;
+    speechSynthesis.addEventListener("voiceschanged", () => speak(), { once: true });
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(S.say);
+  const v = L().voice.map((p) => voices.find((x) => x.lang.toLowerCase().startsWith(p))).find(Boolean);
+  if (v) { u.voice = v; u.lang = v.lang; }
+  u.rate = 0.88;
+  speechSynthesis.speak(u);
+}
+function autoSpeak(){
+  const key = `${S.view}:${S.card ? S.card.card_id : ""}`;
+  if (S.auto && key !== S.spokenKey && S.started) { S.spokenKey = key; setTimeout(speak, 250); }
+}
+function setAuto(on){
+  S.auto = on; document.getElementById("auto").setAttribute("aria-pressed", on);
+  try { localStorage.setItem("ml-auto", on ? "1" : "0"); } catch (e) {}
+  if (on) { S.spokenKey = ""; autoSpeak(); }
+}
 
-$("prompt").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("f").requestSubmit(); }
+// ---------- views (each can redraw itself when the language changes) ----------
+function render(){ chrome(); ({ start: viewStart, question: viewQuestion, hint: viewHint, answer: viewAnswer, done: viewDone, promises: viewPromises })[S.view](); fit(); autoSpeak(); }
+// A photo question puts the photo beside the text (landscape screens have width to spare).
+const withPhoto = (c, inner, small) => c && c.photo
+  ? `<div class="withphoto${small ? " small" : ""}"><img class="photo" src="${esc(c.photo)}" alt="" onload="fit()"><div>${inner}</div></div>` : inner;
+
+// Keep every screen on one page: type stays large, and only a screen with
+// unusually long content (a long quote) is scaled down, a little at a time.
+function fit(){
+  stage.style.zoom = "";
+  let z = 1;
+  while (document.documentElement.scrollHeight > innerHeight + 1 && z > 0.7) {
+    z = Math.round((z - 0.04) * 100) / 100;
+    stage.style.zoom = String(z);
+  }
+}
+addEventListener("resize", () => { clearTimeout(S.fitT); S.fitT = setTimeout(fit, 150); });
+
+function viewStart(){
+  const u = L(), ready = !!S.card;
+  ribbon(null); dots(-1);
+  const line = ready ? u.hello(name(), num(S.state.total)) : u.none(name());
+  S.say = line;
+  stage.innerHTML = `
+    <p class="kicker">${esc(u.practice)}</p>
+    <h1 class="q">${esc(line)}</h1>
+    ${sub(line, ready ? UI.en.hello(S.parentNameEn, S.state.total) : UI.en.none(S.parentNameEn))}
+    ${ready ? `<div class="row"><button class="btn go" id="begin">${esc(u.begin)}${S.mode === "both" ? `<small>${UI.en.begin}</small>` : ""}<kbd>N</kbd></button></div>` : ""}`;
+  if (ready) { const go = () => { S.started = true; S.view = "question"; render(); }; document.getElementById("begin").onclick = go; setKeys({ n: go, enter: go }); }
+  else { setKeys({}); }
+}
+
+function viewQuestion(){
+  const u = L(), c = S.card;
+  ribbon(c.conversation_id); dots(c.number - 1);
+  const q = pick(c.question, c.question_en);
+  S.say = q;
+  stage.innerHTML = `
+    <p class="kicker">${esc(when(c.when))} · ${esc(pick(c.about, c.about_en))}${c.review ? ` <span class="tag">${esc(u.review)}</span>` : ""}${c.voice ? ` <span class="tag" title="Recorded by the family">🎙</span>` : ""}</p>
+    ${withPhoto(c, `<h1 class="q">${esc(q)}</h1>${sub(c.question, c.question_en)}`)}
+    <div class="row">
+      <button class="btn yes" data-a="remembered">${esc(u.remember)}${S.mode === "both" ? `<small>${UI.en.remember}</small>` : ""}<kbd>1</kbd></button>
+      <button class="btn hint" data-a="hint">${esc(u.hint)}${S.mode === "both" ? `<small>${UI.en.hint}</small>` : ""}<kbd>2</kbd></button>
+      <button class="btn no" data-a="forgot">${esc(u.forgot)}${S.mode === "both" ? `<small>${UI.en.forgot}</small>` : ""}<kbd>3</kbd></button>
+    </div>`;
+  stage.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => choose(b.dataset.a));
+  setKeys({ "1": () => choose("remembered"), "2": () => choose("hint"), "3": () => choose("forgot") });
+}
+
+function viewHint(){
+  const u = L(), c = S.card, h = S.hintText;
+  ribbon(c.conversation_id); dots(c.number - 1);
+  const ht = pick(h.hint, h.hint_en);
+  S.say = ht;
+  stage.innerHTML = `
+    <p class="kicker">${esc(u.hintLabel)}</p>
+    ${withPhoto(c, `<h1 class="q">${esc(pick(c.question, c.question_en))}</h1>${sub(c.question, c.question_en)}
+    <p class="hint">${esc(ht)}</p>${sub(h.hint, h.hint_en)}`)}
+    <div class="row">
+      <button class="btn yes" data-r="hint">${esc(u.nowRemember)}${S.mode === "both" ? `<small>${UI.en.nowRemember}</small>` : ""}<kbd>1</kbd></button>
+      <button class="btn no" data-r="forgot">${esc(u.forgot)}${S.mode === "both" ? `<small>${UI.en.forgot}</small>` : ""}<kbd>3</kbd></button>
+    </div>`;
+  stage.querySelectorAll("[data-r]").forEach((b) => b.onclick = () => finish(b.dataset.r));
+  setKeys({ "1": () => finish("hint"), "3": () => finish("forgot") });
+}
+
+function viewAnswer(){
+  const u = L(), c = S.card, a = S.shown, rec = S.rec, r = S.result;
+  ribbon(c.conversation_id); dots(c.number - 1);
+  const ans = pick(a.answer, a.answer_en);
+  S.say = `${ans}. ${u.praise[r]}`;
+  const quotes = (a.evidence || []).slice(0, 2).map((q) => {
+    const main = S.mode === "en" && q.en ? q.en : q.text;
+    const second = S.mode === "en" ? (q.en && q.en !== q.text ? q.text : "") : (S.mode === "both" && q.en !== q.text ? q.en : "");
+    return `<div class="quote"><span class="who">${esc(when(q.at))} · ${esc(S.mode === "en" ? q.name_en : q.name)}</span>
+      <span class="text">“${esc(main)}”</span>${second ? `<span class="tr">${esc(second)}</span>` : ""}</div>`;
+  }).join("");
+  const last = !rec.next;
+  stage.innerHTML = `
+    <p class="kicker">${esc(u.praise[r])}${S.mode === "both" ? ` <span class="sub" style="display:inline">· ${UI.en.praise[r]}</span>` : ""}</p>
+    <h1 class="q" style="font-size:clamp(26px,min(3.5vw,5vh),44px);color:var(--muted)">${esc(pick(c.question, c.question_en))}</h1>
+    ${withPhoto(c, `<p class="answer${r === "remembered" ? " yes" : ""}">${esc(ans)}</p>${sub(a.answer, a.answer_en)}`, true)}
+    ${quotes ? `<div class="source"><h3>${esc(u.from)}</h3>${quotes}</div>` : ""}
+    <div class="row"><button class="btn go" id="next">${esc(last ? u.finish : u.next)}${S.mode === "both" ? `<small>${last ? UI.en.finish : UI.en.next}</small>` : ""}<kbd>N</kbd></button></div>`;
+  const go = () => { if (last) { S.view = "done"; loadDone(); } else { S.card = rec.next; S.view = "question"; render(); } };
+  document.getElementById("next").onclick = go;
+  setKeys({ n: go, enter: go });
+}
+
+async function loadDone(){
+  try { const out = await MCP.call("list_promises"); S.promises = (out.promises || []).filter((p) => p.by_parent); }
+  catch (e) { S.promises = []; }
+  render();
+}
+
+function viewDone(){
+  const u = L(), s = S.state;
+  ribbon("done"); dots(-1);
+  S.say = `${u.done}. ${num(s.remembered)} / ${num(s.total)}`;
+  const recap = (s.answered_items || []).map((a) => `<div class="r-${a.result}"><b>${esc(u.tag[a.result])}</b><span>${esc(pick(a.question, a.question_en))}${S.mode === "both" ? `<br><span class="sub">${esc(a.question_en)}</span>` : ""}</span></div>`).join("");
+  stage.innerHTML = `
+    <p class="kicker">${esc(u.done)}${S.mode === "both" ? ` · ${UI.en.done}` : ""}</p>
+    <div class="score"><span class="big">${num(s.remembered)}/${num(s.total)}</span>
+      <h1 class="q" style="font-size:clamp(30px,min(4.4vw,6.2vh),56px)">${esc(u.scoreTail(s.hint))}</h1></div>
+    ${S.mode === "both" ? `<p class="sub">You remembered ${s.remembered} of ${s.total} on your own${s.hint ? `, ${s.hint} with a hint` : ""}.${s.forgot ? " The ones you missed come back tomorrow." : ""}</p>` : ""}
+    ${recap ? `<div class="recap">${recap}</div>` : ""}
+    ${S.promises.length ? `<div class="row"><button class="btn go" id="toProm">${esc(u.promisesBtn)}${S.mode === "both" ? `<small>${UI.en.promisesBtn}</small>` : ""}<kbd>N</kbd></button></div>` : ""}`;
+  if (S.promises.length) {
+    const go = () => { S.view = "promises"; render(); };
+    document.getElementById("toProm").onclick = go;
+    setKeys({ n: go, enter: go });
+  } else setKeys({});
+}
+
+function viewPromises(){
+  const u = L();
+  ribbon("done"); dots(-1);
+  S.say = u.promisesAsk;
+  stage.innerHTML = `<p class="kicker">${esc(u.promisesTitle)}${S.mode === "both" ? ` · ${UI.en.promisesTitle}` : ""}</p>
+    <h1 class="q" style="font-size:clamp(30px,min(4.2vw,5.8vh),54px)">${esc(u.promisesAsk)}</h1>${sub(u.promisesAsk, UI.en.promisesAsk)}
+    <div style="display:grid;gap:12px">${S.promises.slice(0, 3).map((p) => `<div class="promise"><p>${esc(pick(p.text, p.text_en))}${subOf(p.text, p.text_en) ? `<br><span class="small">${esc(p.text_en)}</span>` : ""}${p.due_date ? `<br><span class="small">${esc(relDate(p.due_date))}</span>` : ""}</p>
+      <button data-p="${p.promise_id}" ${p.reminder_set ? "disabled" : ""}>${esc(p.reminder_set ? u.reminded : u.remind)}</button></div>`).join("")}</div>`;
+  setKeys({});
+  stage.querySelectorAll("[data-p]").forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    try {
+      await MCP.call("remind_me", { promise_id: Number(b.dataset.p) });
+      const p = S.promises.find((x) => x.promise_id === Number(b.dataset.p)); if (p) p.reminder_set = true;
+      b.textContent = L().reminded;
+    } catch (e) { b.disabled = false; error(e); }
+  });
+}
+
+// ---------- actions ----------
+async function choose(action){
+  if (S.busy) return;
+  lock(true);
+  try {
+    if (action !== "hint") return await finish(action, true);
+    S.hintText = await MCP.call("get_hint", { card_id: S.card.card_id });
+    S.view = "hint"; lock(false); render();
+  } catch (e) { error(e); }
+}
+async function finish(result, chained){
+  if (S.busy && !chained) return;
+  lock(true);
+  try {
+    S.shown = await MCP.call("reveal_answer", { card_id: S.card.card_id });
+    S.rec = await MCP.call("record_recall", { card_id: S.card.card_id, result });
+    S.result = result; S.state = S.rec.state;
+    S.view = "answer"; lock(false); render();
+  } catch (e) { error(e); }
+}
+function lock(on){ S.busy = on; stage.querySelectorAll("button").forEach((b) => b.disabled = on); }
+function error(e){ lock(false); stage.insertAdjacentHTML("beforeend", `<p class="err">${esc(L().oops)} ${esc(e.message)}</p>`); }
+
+// ---------- toolbar, keys, MCP log ----------
+function setMode(m){ S.mode = m; try { localStorage.setItem("ml-mode", m); } catch (e) {} render(); }
+document.querySelectorAll("#langs button").forEach((b) => b.onclick = () => setMode(b.dataset.lang));
+document.getElementById("speak").onclick = speak;
+document.getElementById("auto").onclick = () => setAuto(!S.auto);
+try { S.auto = localStorage.getItem("ml-auto") !== "0"; } catch (e) { S.auto = true; }
+if (params.get("voice") === "0") S.auto = false;
+document.getElementById("auto").setAttribute("aria-pressed", S.auto);
+const log = document.getElementById("log"), logBtn = document.getElementById("mcp");
+const toggleLog = () => { log.hidden = !log.hidden; logBtn.setAttribute("aria-pressed", !log.hidden); };
+logBtn.onclick = toggleLog;
+if (params.get("mcp") === "1") toggleLog();
+document.addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest("input,textarea"))) return;
+  const k = e.key.toLowerCase();
+  if (k === "m") return toggleLog();
+  if (k === "r") return speak();
+  if (k === "v") return setAuto(!S.auto);
+  if (k === "l") return setMode({ parent: "both", both: "en", en: "parent" }[S.mode]);
+  const fn = S.keys[k];
+  if (fn && !S.busy) { e.preventDefault(); fn(); }
+});
+MCP.onCall((e) => {
+  const tool = e.method === "tools/call" ? e.params.name : e.method;
+  const args = e.params && e.params.arguments && Object.keys(e.params.arguments).length ? JSON.stringify(e.params.arguments) : "";
+  let res = e.body.error ? e.body.error : e.body.result && (e.body.result.structuredContent || e.body.result);
+  if (res && res.say !== undefined) res = { say: res.say, ...(res.question ? { question: res.question.question } : {}), ...(res.answer ? { answer: res.answer } : {}), ...(res.state ? { state: `${res.state.answered}/${res.state.total}` } : {}) };
+  const div = document.createElement("div");
+  div.className = "e";
+  div.innerHTML = `<span><span class="m">${esc(e.method === "tools/call" ? "tools/call → " + tool : tool)}</span> ${esc(args)} <span class="ms">${e.ms} ms</span></span>
+    <span class="res">${esc(JSON.stringify(res)).slice(0, 360)}</span>`;
+  document.getElementById("logs").prepend(div);
 });
 
-$("f").onsubmit = async (e) => {
-  e.preventDefault();
-  const prompt = $("prompt").value.trim();
-  if (!prompt) return;
-  $("go").disabled = true; $("go").textContent = "Thinking…";
-  $("out").innerHTML = "";
+(async () => {
   try {
-    const r = await fetch("/api/run", {
-      method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({prompt}),
-    });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.detail || r.statusText);
-    render(d);
-  } catch (err) {
-    $("out").innerHTML = `<div class="card err">${esc(err.message)}</div>`;
-  } finally {
-    $("go").disabled = false; $("go").textContent = "Run";
-  }
-};
-
-function render(d) {
-  const steps = (d.steps || []).map((s) => `
-    <div class="step"><b>${esc(s.tool)}</b>
-      <pre>${esc(JSON.stringify(s.input))}</pre>
-      ${s.error ? `<pre class="err">${esc(s.error)}</pre>` : `<pre>${esc(JSON.stringify(s.output, null, 2))}</pre>`}
-    </div>`).join("");
-  $("out").innerHTML = `
-    <div class="card"><div class="answer">${esc(d.answer)}</div>
-      <div class="meta">${(d.ms / 1000).toFixed(1)}s · ${d.steps.length} tool call${d.steps.length === 1 ? "" : "s"}${d.replayed ? " · replayed" : ""}</div>
-    </div>
-    ${steps ? `<div class="card"><div class="meta" style="margin:0 0 6px">How it got there</div>${steps}</div>` : ""}`;
-}
+    const h = await (await fetch("/api/health")).json();
+    S.parentLang = h.parent_lang || "ne"; S.parentName = h.parent || ""; S.parentNameEn = h.parent_en || "Mom";
+    document.getElementById("lang-parent").textContent = S.parentLang === "ne" ? "नेपाली" : (h.parent_lang || "").toUpperCase();
+    if (S.parentLang === "en") { document.getElementById("langs").hidden = true; S.mode = "parent"; }
+    await MCP.init();
+    const out = await MCP.call("start_evening_practice");
+    S.state = out.state; S.day = out.day || []; S.card = out.question;
+    if (out.state.answered > 0) S.started = true;   // practice already under way: keep reading aloud
+    if (!out.question && out.state.answered > 0) { S.view = "done"; return loadDone(); }
+    S.view = "start"; render();
+  } catch (e) { stage.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+})();
 </script>
 </body>
 </html>

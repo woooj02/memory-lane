@@ -1,0 +1,429 @@
+{
+  "101": {
+    "language": "ne",
+    "title_en": "Phone call with Kamala didi (Kathmandu)",
+    "title_parent": "कमला दिदीसँग फोन (काठमाडौं)",
+    "summary_en": "Kamala called from Kathmandu: niece Priya will marry Suman, an engineer from Pokhara, on Mangsir 12 (November 28). She asked for old family photos to show at the wedding.",
+    "summary_parent": "कमला दिदीले काठमाडौंबाट फोन गर्नुभयो: प्रियाको बिहे पोखराका इन्जिनियर सुमनसँग मंसिर १२ गते हुँदैछ। बिहेमा देखाउन पुराना फोटो माग्नुभयो।",
+    "speakers": [
+      {
+        "label": "SPEAKER_1",
+        "name_en": "Mom",
+        "name_parent": "आमा",
+        "is_parent": true
+      },
+      {
+        "label": "SPEAKER_2",
+        "name_en": "Kamala didi (sister)",
+        "name_parent": "कमला दिदी",
+        "is_parent": false
+      }
+    ],
+    "lines_en": [
+      "Hello sister, it's Kamala. I'm calling from Kathmandu, are you well?",
+      "Oh, didi! I'm well. How are you? Is everyone at home okay?",
+      "Everyone's fine. Listen, Priya's wedding is fixed for Mangsir 12. November 28.",
+      "Oh, what good news! Where is the groom from?",
+      "The groom is from Pokhara, he's an engineer. His name is Suman.",
+      "Suman, an engineer from Pokhara. We'll try to come too.",
+      "And sister, please send the old family photos, to show at the wedding.",
+      "Okay didi, I'll call you again on Sunday and send the photos too.",
+      "Alright, let's talk on Sunday. Take care.",
+      "You take care too, didi."
+    ],
+    "cards": [
+      {
+        "kind": "person",
+        "importance": 2,
+        "evidence": [
+          0
+        ],
+        "question_parent": "आज बिहान काठमाडौंबाट कसले फोन गर्नुभयो?",
+        "question_en": "Who called you from Kathmandu this morning?",
+        "answer_parent": "कमला दिदी",
+        "answer_en": "Kamala didi, your sister",
+        "hint_parent": "तपाईंकी दिदी हुनुहुन्छ, नाम 'क' बाट सुरु हुन्छ।",
+        "hint_en": "Your elder sister; her name starts with 'K'.",
+        "health": false
+      },
+      {
+        "kind": "plan",
+        "importance": 3,
+        "evidence": [
+          2
+        ],
+        "question_parent": "प्रियाको बिहे कहिले हो?",
+        "question_en": "When is Priya's wedding?",
+        "answer_parent": "मंसिर १२ गते (नोभेम्बर २८)",
+        "answer_en": "Mangsir 12 (November 28)",
+        "hint_parent": "मंसिर महिनामा, दश र पन्ध्रको बीचमा।",
+        "hint_en": "In Mangsir, between the 10th and the 15th.",
+        "health": false
+      },
+      {
+        "kind": "promise",
+        "importance": 3,
+        "evidence": [
+          6,
+          7
+        ],
+        "question_parent": "तपाईंले कमला दिदीलाई के गर्छु भन्नुभयो?",
+        "question_en": "What did you promise Kamala didi?",
+        "answer_parent": "आइतबार फोन गर्ने र पुराना फोटो पठाउने",
+        "answer_en": "Call back on Sunday and send the old family photos",
+        "hint_parent": "एउटा दिन र केही तस्बिरको कुरा थियो।",
+        "hint_en": "It was about a day of the week and some pictures.",
+        "health": false
+      }
+    ],
+    "promises": [
+      {
+        "by_parent": true,
+        "who": "आमा",
+        "evidence": [
+          7
+        ],
+        "due_date": "2026-10-18",
+        "text_parent": "आइतबार कमला दिदीलाई फोन गर्ने र पुराना पारिवारिक फोटो पठाउने",
+        "text_en": "Call Kamala didi back on Sunday and send the old family photos"
+      }
+    ],
+    "facts": [
+      {
+        "text_en": "Kamala is my older sister; she lives in Kathmandu",
+        "text_parent": "कमला मेरी दिदी हुनुहुन्छ; उहाँ काठमाडौंमा बस्नुहुन्छ",
+        "evidence": [
+          0
+        ]
+      }
+    ]
+  },
+  "102": {
+    "language": "ne",
+    "title_en": "Doctor visit with Bikash",
+    "title_parent": "बिकाससँग डाक्टरकहाँ",
+    "summary_en": "Dr. Patel measured blood pressure at 150/90, started amlodipine 5 mg once each morning after breakfast and stopped the old water pill (hydrochlorothiazide). Follow-up on Thursday the 29th at 10:30. Bikash interpreted.",
+    "summary_parent": "डाक्टरले प्रेसर १५०/९० भेट्नुभयो, बिहान खाना खाएपछि एम्लोडिपिन ५ मि.ग्रा. सुरु गर्नुभयो र पुरानो पानीको चक्की बन्द गर्नुभयो। अर्को भेट बिहीबार २९ गते साढे दस बजे।",
+    "speakers": [
+      {
+        "label": "SPEAKER_1",
+        "name_en": "Mom",
+        "name_parent": "आमा",
+        "is_parent": true
+      },
+      {
+        "label": "SPEAKER_2",
+        "name_en": "Bikash (son)",
+        "name_parent": "बिकास (छोरा)",
+        "is_parent": false
+      },
+      {
+        "label": "SPEAKER_3",
+        "name_en": "Dr. Patel",
+        "name_parent": "डा. प्याटेल",
+        "is_parent": false
+      }
+    ],
+    "lines_en": [
+      "Your blood pressure is a bit high today, 150 over 90.",
+      "Mom, the doctor said your pressure is a bit high, 150 and 90.",
+      "I'm starting a new tablet, amlodipine 5 milligrams, once a day in the morning.",
+      "He gave a new medicine, amlodipine 5 milligrams. Once a day, in the morning.",
+      "Should I take it after eating or before?",
+      "Doctor, after breakfast or before?",
+      "After breakfast is fine. And stop the old water pill, the hydrochlorothiazide.",
+      "Take it after breakfast. And he says not to take the old water pill any more.",
+      "Come back in two weeks, Thursday the 29th at 10:30, so we can check it again.",
+      "The next visit is in two weeks, Thursday the 29th, at half past ten.",
+      "Thursday the 29th at half past ten. Okay, thank you doctor."
+    ],
+    "cards": [
+      {
+        "kind": "instruction",
+        "importance": 3,
+        "evidence": [
+          2,
+          3,
+          6,
+          7
+        ],
+        "question_parent": "डाक्टरले नयाँ चक्कीबारे के भन्नुभयो?",
+        "question_en": "What did the doctor say about the new tablet?",
+        "answer_parent": "एम्लोडिपिन ५ मि.ग्रा., दिनमा एक पटक, बिहान खाना खाएपछि",
+        "answer_en": "Amlodipine 5 mg, once a day, in the morning after breakfast",
+        "hint_parent": "बिहानको समयसँग सम्बन्धित छ।",
+        "hint_en": "It has to do with the morning.",
+        "health": true
+      },
+      {
+        "kind": "instruction",
+        "importance": 3,
+        "evidence": [
+          6,
+          7
+        ],
+        "question_parent": "कुन पुरानो चक्की अब नखाने भन्नुभयो?",
+        "question_en": "Which old tablet did the doctor say to stop?",
+        "answer_parent": "पानीको चक्की (हाइड्रोक्लोरोथायाजाइड)",
+        "answer_en": "The water pill (hydrochlorothiazide)",
+        "hint_parent": "पानीसँग नाम जोडिएको चक्की।",
+        "hint_en": "Its nickname has to do with water.",
+        "health": true
+      },
+      {
+        "kind": "plan",
+        "importance": 3,
+        "evidence": [
+          8,
+          9,
+          10
+        ],
+        "question_parent": "अर्को पटक डाक्टरकहाँ कहिले जाने?",
+        "question_en": "When is your next doctor visit?",
+        "answer_parent": "बिहीबार २९ गते, साढे दस बजे",
+        "answer_en": "Thursday the 29th at 10:30",
+        "hint_parent": "दुई हप्तापछि, एउटा बिहीबार।",
+        "hint_en": "Two weeks from now, on a Thursday.",
+        "health": false
+      }
+    ],
+    "promises": [
+      {
+        "by_parent": true,
+        "who": "आमा",
+        "evidence": [
+          8,
+          9,
+          10
+        ],
+        "due_date": "2026-10-29",
+        "text_parent": "बिहीबार २९ गते साढे दस बजे डाक्टरकहाँ जाने",
+        "text_en": "Doctor follow-up on Thursday the 29th at 10:30"
+      }
+    ],
+    "facts": [
+      {
+        "text_en": "My doctor is Dr. Patel",
+        "text_parent": "मेरो डाक्टर डा. प्याटेल हुनुहुन्छ",
+        "evidence": [
+          0
+        ]
+      }
+    ]
+  },
+  "103": {
+    "language": "ne",
+    "title_en": "Talk with neighbour Maya at the park",
+    "title_parent": "पार्कमा छिमेकी मायासँग कुरा",
+    "summary_en": "Maya's grandson Aarav started kindergarten this week. Her walking group meets at the park on Tuesdays and Fridays at 7am and she invited you. She'll bring her lapsi pickle recipe next time.",
+    "summary_parent": "मायाको नाति आरव यो हप्ता किन्डरगार्टेन जान थाल्यो। उनको हिँड्ने समूह मंगलबार र शुक्रबार बिहान ७ बजे पार्कमा भेट्छ र तपाईंलाई बोलाइन्। अर्को पटक लप्सीको अचारको विधि ल्याइदिन्छु भनिन्।",
+    "speakers": [
+      {
+        "label": "SPEAKER_1",
+        "name_en": "Mom",
+        "name_parent": "आमा",
+        "is_parent": true
+      },
+      {
+        "label": "SPEAKER_2",
+        "name_en": "Maya (neighbour)",
+        "name_parent": "माया (छिमेकी)",
+        "is_parent": false
+      }
+    ],
+    "lines_en": [
+      "Namaste didi! It's sunny today, did you come for a walk?",
+      "Namaste Maya. Yes, I came for a little walk. How is your grandson?",
+      "Aarav started kindergarten this week. He cried on the first day, now he enjoys it.",
+      "Oh, Aarav has started school! He grew up so fast.",
+      "Our walking group meets here at the park on Tuesdays and Fridays at seven in the morning. Please come too.",
+      "Tuesday and Friday at seven? I'll come too.",
+      "And next time I'll bring the lapsi pickle recipe I told you about.",
+      "Okay, I really love lapsi pickle."
+    ],
+    "cards": [
+      {
+        "kind": "person",
+        "importance": 2,
+        "evidence": [
+          2
+        ],
+        "question_parent": "पार्कमा मायाले आफ्नो नातिबारे के भनिन्?",
+        "question_en": "What did Maya tell you about her grandson?",
+        "answer_parent": "आरव यो हप्ता किन्डरगार्टेन जान थाल्यो",
+        "answer_en": "Aarav started kindergarten this week",
+        "hint_parent": "नातिको नाम 'आ' बाट सुरु हुन्छ, स्कुलको कुरा।",
+        "hint_en": "His name starts with 'Aa'; it's about school.",
+        "health": false
+      },
+      {
+        "kind": "plan",
+        "importance": 2,
+        "evidence": [
+          4,
+          5
+        ],
+        "question_parent": "हिँड्ने समूह कुन दिन र कति बजे भेट्छ?",
+        "question_en": "Which days and what time does the walking group meet?",
+        "answer_parent": "मंगलबार र शुक्रबार, बिहान ७ बजे, पार्कमा",
+        "answer_en": "Tuesdays and Fridays at 7am, at the park",
+        "hint_parent": "हप्तामा दुई दिन, बिहान सबेरै।",
+        "hint_en": "Two days a week, early in the morning.",
+        "health": false
+      },
+      {
+        "kind": "detail",
+        "importance": 1,
+        "evidence": [
+          6
+        ],
+        "question_parent": "मायाले अर्को पटक के ल्याइदिन्छु भनिन्?",
+        "question_en": "What did Maya say she'd bring next time?",
+        "answer_parent": "लप्सीको अचारको विधि",
+        "answer_en": "Her lapsi pickle recipe",
+        "hint_parent": "खानेकुराको विधि हो, अमिलो।",
+        "hint_en": "A recipe for something sour.",
+        "health": false
+      }
+    ],
+    "promises": [
+      {
+        "by_parent": true,
+        "who": "आमा",
+        "evidence": [
+          5
+        ],
+        "due_date": "2026-10-20",
+        "text_parent": "मंगलबार बिहान ७ बजे पार्कमा हिँड्ने समूहमा जाने",
+        "text_en": "Join the walking group at the park on Tuesday at 7am"
+      },
+      {
+        "by_parent": false,
+        "who": "माया",
+        "evidence": [
+          6
+        ],
+        "due_date": "",
+        "text_parent": "लप्सीको अचारको विधि ल्याइदिने",
+        "text_en": "Bring her lapsi pickle recipe"
+      }
+    ],
+    "facts": [
+      {
+        "text_en": "Maya is my neighbour; we meet at the park",
+        "text_parent": "माया मेरो छिमेकी हुनुहुन्छ; हामी पार्कमा भेट्छौँ",
+        "evidence": [
+          0
+        ]
+      }
+    ]
+  },
+  "104": {
+    "language": "ne",
+    "title_en": "Dinner with Bikash: plans for Sita's birthday",
+    "title_parent": "बिकाससँग बेलुकीको खाना: सीताको जन्मदिनको योजना",
+    "summary_en": "Sita's birthday is next Saturday and you'll make chicken momo. Bikash will bring meat and flour on Friday evening, change the TV remote batteries tomorrow and invite his wife.",
+    "summary_parent": "अर्को शनिबार सीताको जन्मदिन; तपाईं कुखुराको मम बनाउनुहुन्छ। बिकासले शुक्रबार साँझ मासु र मैदा ल्याउँछ, भोलि रिमोटको ब्याट्री फेर्छ र बुहारीलाई बोलाउँछ।",
+    "speakers": [
+      {
+        "label": "SPEAKER_1",
+        "name_en": "Mom",
+        "name_parent": "आमा",
+        "is_parent": true
+      },
+      {
+        "label": "SPEAKER_2",
+        "name_en": "Bikash (son)",
+        "name_parent": "बिकास (छोरा)",
+        "is_parent": false
+      }
+    ],
+    "lines_en": [
+      "Mom, next Saturday is Sita's birthday, you remember?",
+      "I remember, I'll make momo next Saturday. Sita loves chicken momo.",
+      "I'll bring meat and flour from the market on Friday evening.",
+      "Okay, son. And the TV remote isn't working again.",
+      "I'll change the batteries tomorrow, then the remote will work.",
+      "And do invite my daughter-in-law for Saturday too.",
+      "Sure, I'll call and tell her today."
+    ],
+    "cards": [
+      {
+        "kind": "plan",
+        "importance": 3,
+        "evidence": [
+          0,
+          1
+        ],
+        "question_parent": "अर्को शनिबार के छ, र तपाईं के बनाउनुहुन्छ?",
+        "question_en": "What is next Saturday, and what will you cook?",
+        "answer_parent": "सीताको जन्मदिन; कुखुराको मम",
+        "answer_en": "Sita's birthday; chicken momo",
+        "hint_parent": "छोरीको खास दिन, र एउटा नेपाली परिकार।",
+        "hint_en": "Your daughter's special day, and a Nepali dish.",
+        "health": false
+      },
+      {
+        "kind": "person",
+        "importance": 2,
+        "evidence": [
+          2
+        ],
+        "question_parent": "बिकासले शुक्रबार साँझ बजारबाट के ल्याउँछु भन्यो?",
+        "question_en": "What did Bikash say he'd bring from the market on Friday evening?",
+        "answer_parent": "मासु र मैदा",
+        "answer_en": "Meat and flour",
+        "hint_parent": "मम बनाउन चाहिने दुई कुरा।",
+        "hint_en": "Two things you need for momo.",
+        "health": false
+      },
+      {
+        "kind": "promise",
+        "importance": 2,
+        "evidence": [
+          4
+        ],
+        "question_parent": "टिभीको रिमोट कसले र कसरी ठीक गर्छ?",
+        "question_en": "Who will fix the TV remote, and how?",
+        "answer_parent": "बिकासले भोलि ब्याट्री फेरिदिन्छ",
+        "answer_en": "Bikash will change the batteries tomorrow",
+        "hint_parent": "छोराले, केही नयाँ हालेर।",
+        "hint_en": "Your son, by putting something new in.",
+        "health": false
+      }
+    ],
+    "promises": [
+      {
+        "by_parent": true,
+        "who": "आमा",
+        "evidence": [
+          1
+        ],
+        "due_date": "2026-10-24",
+        "text_parent": "अर्को शनिबार सीताको जन्मदिनमा कुखुराको मम बनाउने",
+        "text_en": "Make chicken momo for Sita's birthday next Saturday"
+      },
+      {
+        "by_parent": false,
+        "who": "बिकास",
+        "evidence": [
+          2
+        ],
+        "due_date": "2026-10-23",
+        "text_parent": "शुक्रबार साँझ मासु र मैदा ल्याइदिने",
+        "text_en": "Bring meat and flour on Friday evening"
+      },
+      {
+        "by_parent": false,
+        "who": "बिकास",
+        "evidence": [
+          4
+        ],
+        "due_date": "",
+        "text_parent": "भोलि रिमोटको ब्याट्री फेरिदिने",
+        "text_en": "Change the TV remote batteries tomorrow"
+      }
+    ],
+    "facts": []
+  }
+}
