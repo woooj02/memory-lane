@@ -19,7 +19,7 @@ Her day, given back to her, in her own language: evening memory practice built f
 
 ## Inspiration
 About 5.6 million Americans over 65 don't speak English very well (U.S. Census Bureau, American
-Community Survey 2024, table B16004). My mom is one of them. She's in her sixties and speaks only
+Community Survey 2024, table B16004). My mom is around sixty, and she doesn't either: she speaks only
 Nepali. Lately the details of her day slip away: who called from Kathmandu, what the doctor said
 about the new tablet, what she promised her sister.
 

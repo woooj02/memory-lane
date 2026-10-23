@@ -6,7 +6,7 @@
 **Alexa+ MCP endpoint:** https://memory-lane.91.99.162.43.sslip.io/mcp
 
 About 5.6 million Americans over 65 don't speak English very well (U.S. Census Bureau, ACS 2024,
-table B16004). My mom is one of them. She's in her sixties, speaks only Nepali, and the details of
+table B16004). My mom is around sixty and doesn't either. She speaks only Nepali, and the details of
 her day are getting harder to hold on to: who called, what the doctor said, what she promised.
 The apps around her don't speak her language, and neither do I, fast enough to follow every
 conversation.

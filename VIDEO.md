@@ -21,7 +21,7 @@ an Echo Show). English narration in your voice, with English captions under all 
 with lyrics; no third-party music, footage or logos; no Alexa+ logo ("Simulated Alexa+" text is fine).
 
 ## The opening number (sourced)
-**"5.6 million Americans over 65 don't speak English very well. My mom is one of them."**
+**"5.6 million Americans over 65 don't speak English very well. My mom doesn't either."**
 Source: U.S. Census Bureau, American Community Survey 2024 1-year, table B16004 (age 65+, speak
 English less than "very well": 5,565,363 of 61.2 million, about 1 in 11). Put the source in small
 text on screen and in the Devpost description. Use no other statistics, and never imply it
