@@ -151,7 +151,7 @@ bee, bee-cli, bee-cli-python, python, fastapi, sqlite, together-ai, mcp, alexa-p
   MIT, 42 tests, Python 3.10+.
 
 ## Links
-- Demo video: [YouTube/Vimeo URL]
+- Demo video: https://www.youtube.com/watch?v=0nj9_PJXPXk
 - Code: https://github.com/woooj02/memory-lane
 - Live demo (a made-up sample day, so no family data; English mode available): https://memory-lane.91.99.162.43.sslip.io
 - Alexa+ MCP endpoint (Streamable HTTP): https://memory-lane.91.99.162.43.sslip.io/mcp

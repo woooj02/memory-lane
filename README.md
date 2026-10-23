@@ -2,6 +2,7 @@
 
 **Her day, given back to her, in her own language.**
 
+**Demo video (2:48):** https://www.youtube.com/watch?v=0nj9_PJXPXk ·
 **Live demo** (a made-up sample day): https://memory-lane.91.99.162.43.sslip.io ·
 **Alexa+ MCP endpoint:** https://memory-lane.91.99.162.43.sslip.io/mcp
 
