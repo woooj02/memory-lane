@@ -148,7 +148,7 @@ bee, bee-cli, bee-cli-python, python, fastapi, sqlite, together-ai, mcp, alexa-p
   - `FakeBee`, so apps can be tested without a device;
   - `python -m beecli doctor`.
 
-  MIT, 42 tests, CI on Python 3.10–3.13.
+  MIT, 42 tests, Python 3.10+.
 
 ## Links
 - Demo video: [YouTube/Vimeo URL]
