@@ -41,7 +41,7 @@ much of it is Nepali script. Then check the newer Bee data Memory Lane uses:
 ```bash
 cd ../bee-cli-python && ./venv/bin/python -m beecli doctor && cd ../memory-lane
 bee facts list --json | head -c 600; echo
-bee photos list --json --limit 2 | head -c 600; echo     # paste these two to Claude: their shape isn't documented
+bee photos list --json --limit 2 | head -c 600; echo     # keep these two: their shape isn't documented
 ```
 
 ## 4. The decision

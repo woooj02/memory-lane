@@ -34,7 +34,7 @@ Apple Watch / Bee ─► Bee cloud ─► bee CLI ─► bee-cli-python ─► M
   live     bee stream ──────► each line ─► English (fast model) ─► family page, live
                                         └► promise? ─► bee todos create --alarm-at   (seconds)
   digest   bee conversations get ─┐
-           bee facts list ────────┼─► AI, in parallel: speakers, summary, up to 3 questions,
+           bee facts list ────────┼─► AI, in parallel: speakers, summary, suggested questions,
                                   │   promises, lasting facts · every line translated
            bee photos list ───────┴─► "who were you with?" from who was talking then
            ─► SQLite: questions, spaced review, promises, facts
@@ -57,7 +57,8 @@ Apple Watch / Bee ─► Bee cloud ─► bee CLI ─► bee-cli-python ─► M
   (`TOGETHER_MODEL` for questions and translation, `TOGETHER_FAST_MODEL` for live lines), or
   Claude on the API or Amazon Bedrock.
   - Every answer is held to a JSON schema.
-  - Questions must cite the transcript lines they come from, or they're dropped.
+  - Questions cite the transcript lines they come from. One that can't (no line, or only TV lines) isn't dropped:
+    it waits on /family for the family to keep or remove, like health questions.
   - `./run.sh compare` runs several models on one conversation and writes a side-by-side, so the
     model is chosen by someone who reads Nepali.
 - **Practice** (`app/service.py`): six questions a night.

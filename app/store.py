@@ -77,7 +77,8 @@ MIGRATIONS = {
     "cards": {"health": "INTEGER NOT NULL DEFAULT 0", "status": "TEXT NOT NULL DEFAULT 'active'",
               "media": "TEXT",          # {"photo": "<file name in DATA/photos>"}
               "source_key": "TEXT",     # e.g. "photo:501", so a re-sync doesn't add it twice
-              "voice": "TEXT"},         # file name in DATA/voice: the question in a family member's voice
+              "voice": "TEXT",          # file name in DATA/voice: the question in a family member's voice
+              "check_reason": "TEXT"},  # why it waits for the family's OK (no transcript line, only TV lines)
     "reviews": {"prev_box": "INTEGER", "prev_due": "TEXT"},
 }
 
@@ -177,12 +178,14 @@ class Store:
                 for c in digest["cards"]:
                     self.db.execute(
                         """INSERT INTO cards (conversation_id, kind, importance, health, status, question_parent,
-                             question_en, answer_parent, answer_en, hint_parent, hint_en, evidence, due, created_day)
-                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                             question_en, answer_parent, answer_en, hint_parent, hint_en, evidence, due, created_day,
+                             check_reason)
+                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                         (conv["id"], c["kind"], c["importance"], int(bool(c.get("health"))),
-                         "pending" if c.get("health") else "active",
+                         "pending" if c.get("health") or c.get("check") else "active",
                          c["question_parent"], c["question_en"], c["answer_parent"], c["answer_en"],
-                         c["hint_parent"], c["hint_en"], json.dumps(c["evidence"]), day, day))
+                         c["hint_parent"], c["hint_en"], json.dumps(c["evidence"]), day, day,
+                         c.get("check") or None))
                 for p in digest["promises"]:
                     self.db.execute(
                         """INSERT INTO promises (conversation_id, by_parent, who, text_parent, text_en, due_date,
@@ -266,7 +269,7 @@ class Store:
 
     def pending_cards(self) -> list[dict]:
         return self._rows(
-            """SELECT c.*, v.start_ms, v.title_en FROM cards c JOIN conversations v ON v.id=c.conversation_id
+            """SELECT c.*, v.start_ms, v.title_en, v.day FROM cards c JOIN conversations v ON v.id=c.conversation_id
                WHERE c.deleted=0 AND c.status='pending' AND v.private=0 AND v.status!='deleted' ORDER BY v.start_ms, c.id""")
 
     def add_card(self, conversation_id: int, c: dict, day: str, media: dict | None = None,

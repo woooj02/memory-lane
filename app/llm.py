@@ -86,7 +86,7 @@ def together(model_id: str, system: str, prompt: str, schema: dict, max_tokens: 
     last = "no answer"
     for attempt in range(3):
         try:
-            r = httpx.post(TOGETHER_URL, json=body, timeout=240,
+            r = httpx.post(TOGETHER_URL, json=body, timeout=600,
                            headers={"Authorization": f"Bearer {key}"})
         except httpx.HTTPError as exc:
             last = f"network error: {exc}"

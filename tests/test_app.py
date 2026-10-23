@@ -77,13 +77,13 @@ def test_notice_page(client):
 
 
 def test_sync_digests_the_sample_day(synced):
-    assert synced["digested"] == 4 and synced["skipped"] == 1 and not synced["errors"]
+    assert synced["digested"] == 5 and synced["skipped"] == 0 and not synced["errors"]  # short ones are kept too
 
 
 def test_day_has_speakers_translations_and_cards(client, synced):
     day = client.get("/api/day").json()
     convs = {c["id"]: c for c in day["conversations"]}
-    assert convs[105]["status"] == "skipped"
+    assert convs[105]["status"] == "digested" and convs[105]["cards"] == []
     call = convs[101]
     assert call["lines"][2]["en"].startswith("Everyone's fine")
     assert call["lines"][0]["name"] == "Kamala didi (sister)" and call["lines"][1]["is_parent"]
@@ -101,7 +101,7 @@ def test_health_questions_wait_for_family(client, synced):
 
 def test_stats_count_bee_calls(client, synced):
     s = client.get("/api/stats").json()
-    assert s["conversations"] == 4 and s["lines"] == 38 and s["cards"] == 14
+    assert s["conversations"] == 5 and s["lines"] == 38 and s["cards"] == 14
     assert s["bee_calls"]["conversations get"] >= 5
 
 
@@ -350,14 +350,15 @@ def test_transcript_prefers_final_transcription():
 
 # ---- digest ----
 
-def test_clean_drops_ungrounded_cards():
+def test_clean_keeps_ungrounded_cards_for_the_family_to_check():
     base = {"kind": "plan", "health": False, "question_parent": "q", "question_en": "q", "answer_parent": "a",
             "answer_en": "a", "hint_parent": "h", "hint_en": "h", "importance": 3}
     data = {"lines_en": ["one"], "speakers": [], "promises": [],
             "cards": [dict(base, evidence=[0, 9, -1]), dict(base, evidence=[42])]}
     out = digest.clean(data, 3, source="claude")
     assert out["lines_en"] == ["one", "", ""]
-    assert len(out["cards"]) == 1 and out["cards"][0]["evidence"] == [0]
+    assert [c["evidence"] for c in out["cards"]] == [[0], []]
+    assert out["cards"][0]["check"] == "" and out["cards"][1]["check"].startswith("No transcript line")
 
 
 def test_digest_uses_model_and_chunks_translation(monkeypatch):
@@ -468,7 +469,8 @@ def test_known_facts_are_not_suggested_again():
     data = {"cards": [], "promises": [], "speakers": [],
             "facts": [{"text_en": "Bikash is my son", "text_parent": "x", "evidence": [0]},
                       {"text_en": "My doctor is Dr. Patel", "text_parent": "y", "evidence": [99]}]}
-    assert digest.clean(data, 3, "t", known_facts=["bikash is my son"])["facts"] == []
+    facts = digest.clean(data, 3, "t", known_facts=["bikash is my son"])["facts"]
+    assert [f["text_en"] for f in facts] == ["My doctor is Dr. Patel"]  # unbacked facts are still suggested
 
 
 # ---- photo questions ----
@@ -591,7 +593,7 @@ def test_cli_bee_facts_photos_and_todo_delete(tmp_path):
 
 def test_nepali_rebuilt_from_hindi_recognizer():
     """Bee has no Nepali: set to Hindi, it writes her Nepali the Hindi way. The model rebuilds each line,
-    marks the TV, and a card can't rest on a TV line. Bee's own words are kept beside the rebuilt ones."""
+    marks the TV, and a card resting only on a TV line waits for the family. Bee's own words are kept beside the rebuilt ones."""
     assert config.rebuilding() and "runs its Hindi" in digest.TRANSLATE_SYSTEM
     lines = digest.lines_from({"lines_parent": ["मैले बुझें"], "lines_en": ["I understood", "What do you want?"],
                                "background": [1]}, 2)
@@ -600,14 +602,15 @@ def test_nepali_rebuilt_from_hindi_recognizer():
     card = {"kind": "detail", "question_parent": "क?", "question_en": "Q?", "answer_parent": "उ", "answer_en": "A",
             "hint_parent": "", "hint_en": "", "evidence": [1], "importance": 1}
     out = digest.clean({"cards": [card], "lines_parent": ["मैले बुझें"], "background": [1]}, 2, "together")
-    assert out["cards"] == [] and out["background"] == [1] and out["lines_parent"] == ["मैले बुझें", ""]
+    assert out["cards"][0]["check"].startswith("Only lines marked as TV") and out["cards"][0]["evidence"] == [1]
+    assert out["background"] == [1] and out["lines_parent"] == ["मैले बुझें", ""]
     assert service._fixed({"lines_parent": ["मैले बुझें"]}, 0) == "मैले बुझें"
     assert service._fixed({"lines_parent": ["मैले बुझें"]}, 3) == ""
 
 
 def test_manual_mode_waits_then_applies_a_hand_digest(tmp_path, monkeypatch):
     """LLM_PROVIDER=manual: sync makes no AI call, transcripts wait; a hand-written digest goes
-    through the same checks as a model's (no evidence, no card)."""
+    through the same checks as a model's (no evidence: the card waits for the family's OK)."""
     from app import llm, manual
 
     monkeypatch.setattr(config, "llm_provider", lambda: "manual")
@@ -632,7 +635,11 @@ def test_manual_mode_waits_then_applies_a_hand_digest(tmp_path, monkeypatch):
     manual.apply(lane2, cid)
     conv = lane2.store.conversation(cid)
     assert conv["status"] == "digested" and conv["source"] == "manual"
-    assert len(lane2.store._rows("SELECT * FROM cards WHERE conversation_id=?", (cid,))) == 1
+    cards = lane2.store._rows("SELECT * FROM cards WHERE conversation_id=? ORDER BY id", (cid,))
+    assert [c["status"] for c in cards] == ["active", "pending"] and cards[1]["check_reason"]
+    assert [c["id"] for c in lane2.pending()] == [cards[1]["id"]]
+    lane2.approve_card(cards[1]["id"])
+    assert lane2.store.card(cards[1]["id"])["status"] == "active"
     (tmp_path / f"{cid}.json").write_text(json.dumps(dict(answer, lines_en=["e"])))
     with pytest.raises(SystemExit):
         manual.apply(lane2, cid)
@@ -751,12 +758,19 @@ def test_pause_until_tomorrow_route(client):
 
 # ---- pause applies to sync, live lines and reminders (task 3) ----
 
+def _pause_all_day(lane2):
+    """A pause from midnight to tomorrow. pause(until=...) starts now, which misses this morning's demo conversations
+    when the tests run in the evening."""
+    midnight = datetime.now(config.TZ).replace(hour=0, minute=0, second=0, microsecond=0)
+    start = int(midnight.timestamp() * 1000)
+    lane2.store.set_setting("pauses", json.dumps([{"start_ms": start, "end_ms": start + 2 * 86_400_000}]))
+
+
 def test_paused_sync_skips_conversations(tmp_path):
     """A conversation that starts inside a pause window is saved as skipped
     with reason 'paused' and empty utterances; cards/promises are not created."""
     lane2 = service.MemoryLane(Store(tmp_path / "ps.db"), bee.DemoBee())
-    # Pause for the rest of today: covers all demo conversations which start today.
-    lane2.pause(until="tomorrow")
+    _pause_all_day(lane2)  # covers every demo conversation, whatever the time of day
     report = lane2.sync()
     # All conversations started today → all skipped
     assert report["digested"] == 0
@@ -774,7 +788,7 @@ def test_paused_sync_skips_conversations(tmp_path):
 def test_paused_sync_skipped_reason_is_paused(tmp_path):
     """Conversation digested during a pause is saved with error='paused'."""
     lane2 = service.MemoryLane(Store(tmp_path / "pr.db"), bee.DemoBee())
-    lane2.pause(until="tomorrow")
+    _pause_all_day(lane2)
     lane2.sync()
     convs = lane2.store.conversations(service.today())
     paused = [c for c in convs if c["error"] == "paused"]
@@ -791,7 +805,7 @@ def test_conversation_after_pause_is_digested(tmp_path):
     lane2.store.set_setting("pauses", json.dumps([{"start_ms": midnight_ms, "end_ms": midnight_ms + 60}]))
     report = lane2.sync()
     # None of the demo conversations start within that tiny window
-    assert report["digested"] == 4 and report["skipped"] == 1
+    assert report["digested"] == 5 and report["skipped"] == 0
 
 
 def test_live_line_dropped_while_paused(tmp_path):

@@ -8,8 +8,8 @@ Three promises, and every scene serves one of them:
 2. **She keeps her word.** What she promises out loud lands in Bee as a reminder.
 3. **Her family has her back.** Every Nepali line in English, and medicine questions checked first.
 
-The video follows **one day**, morning to night. It is not a feature tour: if a feature doesn't
-move that day forward, it stays out (facts and Alexa+ get a few seconds at the end).
+The video follows **her real Dashain week** (Sun Oct 18 – Tue Oct 20). It is not a feature tour: if a feature
+doesn't move her week forward, it stays out (facts and Alexa+ get a few seconds at the end).
 
 It must also prove, fast:
 - **Live Bee data** (Stage 1 is pass/fail on this): the Bee app with today's date, and lines arriving live.
@@ -32,38 +32,39 @@ The evening screen has a language switch (top right, or key **L**): नेपा
 English. Use **नेपाली + English** for most of the evening, one short shot in Nepali only, and one
 "same screen, now in English" beat. The family page is always English beside Nepali.
 
-## Storyboard
+## Storyboard (rewritten Oct 23 for her real Dashain week; the word-for-word script is in [SCRIPT.md](SCRIPT.md))
 
-| Time | Scene | On screen | Narration / caption |
+The first plan (sister's call, doctor visit, park photo, a live promise) needed scenes Bee never caught. This
+version uses only her real Bee data: 25 conversations over Sun–Tue, with Monday's Mahanavami puja and Tuesday's
+nail salon, Dashain shopping and tika night. Every question and translation on screen was made by the open model on
+Together AI and checked on the family page.
+
+| Time | Scene | On screen | Promise it serves |
 |---|---|---|---|
-| 0:00–0:12 | **Her** | Mom at the table, the pink watch on her wrist. Text: "5.6 million Americans over 65 don't speak English very well." (source small) | "My mom is one of them. She's in her sixties, she speaks only Nepali, and lately the details of her day slip away." |
-| 0:12–0:20 | **Consent, said plainly** | She shows a visitor the `/notice` card on her phone (Nepali + English). | Caption: "Everyone she talks to knows Bee is listening. Pause and delete are one tap away." |
-| 0:20–0:45 | **Morning: her sister calls** | Speakerphone call with her sister. Cut to `/family` → **Heard just now**: Nepali lines arrive live, English fills in under each. **Proof shot (2s):** the Bee app's conversation list with today's date. | "Her Apple Watch runs Bee. Memory Lane listens to Bee's live stream, so I can follow a conversation I couldn't understand before." Caption: `bee stream → live lines → English` |
-| 0:45–0:58 | **She keeps her word (the wow beat)** | She says "हुन्छ दिदी, म आइतबार फोन गर्छु" (I'll call you Sunday). Seconds later: ⏰ **In her Bee · Sun 9:00 AM** appears on /family, then the reminder on her iPhone. | "She promised to call back on Sunday. Before she's even hung up, it's a reminder in her Bee." Caption: `real time → bee todos create --alarm-at` |
-| 0:58–1:15 | **Midday: the doctor** | /family → **Waiting for your OK**: "What did the doctor say about the new tablet?" beside the doctor's exact words. Click **Approve**. | "Her day becomes a few questions, each tied to the exact words it came from. Anything about medicine waits until I've checked it." |
-| 1:15–2:05 | **Evening: she remembers** | The evening screen (Simulated Alexa+ · Echo Show), **नेपाली + English**. The day timeline at the top. It reads the question aloud (in my voice, recorded on /family). Q1 she remembers → green. **Photo question**: her photo from the park, "Who were you with?" → hint → "Maya". Q3 she forgets → the answer with her sister's actual words. Press **L**: the same screen in English. | "In the evening she walks back through her own day, in Nepali, in my voice. A hint if she's stuck. If she forgets, she hears the words that were said to her. What she misses comes back tomorrow." |
-| 2:05–2:15 | **End of practice** | "4 of 6", her promises, **Remind me in Bee** already ✓. Her smile. | "Four of six, on her own." |
-| 2:15–2:40 | **How it's built** | `/how`: the pipeline with live counts. Quick cuts: the MCP panel (key **M**) with `start_evening_practice` / `record_recall`; "Teach Bee about her" saving a fact; the open-source library's README. | "Bee's live stream, transcripts, facts, photos and todos, through an open-source Python client we built. Open models on Together AI for translation and questions. The evening screen is an Alexa+ add-on: an MCP server any Alexa+ device or MCP client can run." |
-| 2:40–2:55 | **Close** | Mom at the screen, or her hands on it. Title: सम्झना · Memory Lane. | "For every parent whose day happens in a language their apps don't speak." |
-
-Timing check: about 2:55. If it's long, trim the "How it's built" cuts first, but keep at least 10 seconds of it.
+| 0:00–0:12 | **Her** | Mom, the pink watch. The sourced number. | – |
+| 0:12–0:20 | **Consent** | `/notice` card. | – |
+| 0:20–0:47 | **Her real Dashain week** | Bee app list, Tue → Sun (proof). `/family?day=2026-10-19`: the priest's Sanskrit at the Mahanavami puja; → Tuesday: a Durga-shopping line rebuilt from "Bee heard" into Nepali + English; TV tagged. | Her family has her back |
+| 0:47–1:02 | **Waiting for your OK** | Knee therapy (health) → **Remove**. The café order ("Check": tagged background) → **Keep**. "Nothing is thrown away on its own." | Her family has her back |
+| 1:02–1:15 | **She keeps her word** | "Not now. Next time." → **Add to her Bee reminders** → the reminder in the Bee app. | She keeps her word |
+| 1:15–2:07 | **Evening** | Evening screen, नेपाली + English. Monday: the purse → the supari at the puja (hint). Tuesday: the twins → eyebrows → the flower → the tika. **L** to English. | She remembers her day |
+| 2:07–2:14 | **Score** | "[X] of 6". | She remembers her day |
+| 2:14–2:40 | **How it's built** | `/how`, the MCP panel (**M**), the bee-cli-python README, the Kiro spec. | – |
+| 2:40–2:52 | **Close** | Mom at the screen. सम्झना · Memory Lane. | – |
 
 ## Before recording
-- Real Bee data from her days (`BEE_MODE=cli`). For backup takes, the sample day (`BEE_MODE=demo LLM_PROVIDER=mock`) looks the same, and **Play the morning call live** on /family fires the real-time reminder.
-- Record the evening questions in your voice on /family (**🎙 Ask it in your voice**) before filming.
-- On /family, press **Reset tonight's practice** before each take of the evening.
-- Open the evening screen at `/?lang=both`. Keys: **1** remember · **2** hint · **3** forgot · **N/Enter** next · **R** read aloud · **V** auto read-aloud · **L** language · **M** MCP panel.
+- Tonight's 6 questions are pinned (setting `plan:2026-10-23`, and `plan:2026-10-24` in case filming runs
+  past midnight). **Reset tonight's practice** now keeps the same questions and only undoes the answers.
+- The family page shows any day: `?day=YYYY-MM-DD`, or ← / → beside the heading.
+- Keys on the evening screen: **1** remember · **2** hint · **3** forgot · **N/Enter** next · **R** read aloud ·
+  **V** auto read-aloud · **L** language · **M** MCP panel.
 
-## Shots to collect (Sun–Tue)
-- [ ] Mom showing the /notice card to someone (consent, 0:12)
-- [ ] Speakerphone call with her sister where she promises something with a day (0:20–0:58)
-- [ ] iPhone: the Bee app's conversation list with today's date (proof)
-- [ ] iPhone: the reminder that was created, with its alarm
-- [ ] A visit or doctor-style conversation with an instruction (staged, everyday)
-- [ ] A photo she takes during a conversation (for the photo question)
-- [ ] Screen recordings: /family live feed; the whole evening practice, 2–3 takes
-- [ ] Mom's hands or face at the screen during practice (with her OK)
-- [ ] /how page, slow
+## Shots to collect
+- [ ] iPhone: the Bee app's conversation list, Tue Oct 20 back to Sun Oct 18 (proof)
+- [ ] Screen: family page Monday and Tuesday (Beats 3–5), one continuous take each for Beats 4 and 5
+- [ ] iPhone: the reminder Beat 5 creates
+- [ ] Screen + Mom: the evening practice, 2–3 takes
+- [ ] Mom at the table with the watch (open), Mom at the screen (close), with her OK
+- [ ] `/how`, the MCP panel, the README, the Kiro spec
 
 ## Rules to respect (official)
 - Under 3 minutes, public on YouTube or Vimeo, in English (captions for Nepali).

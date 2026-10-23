@@ -20,7 +20,7 @@ from datetime import datetime
 from . import bee, config, llm
 
 KINDS = ["person", "plan", "instruction", "place", "detail", "promise"]
-CHUNK = 60  # transcript lines per translation call
+CHUNK = 40  # transcript lines per translation call (long chunks ran out of tokens on Kimi)
 
 _str = {"type": "string"}
 _ints = {"type": "array", "items": {"type": "integer"}}
@@ -112,13 +112,15 @@ UNDERSTAND_SYSTEM = f"""You help an older adult keep their memory active by prac
 
 You get the transcript of one real conversation the person had today, captured by their Bee wearable.
 The person wearing the Bee is the parent. They speak {config.PARENT_LANG_NAME}; their family reads {config.FAMILY_LANG_NAME}.
-Speech recognition makes mistakes. When a line is unclear, do not build a card on it.
+Speech recognition makes mistakes. Everything you return is a suggestion: the family reviews it and removes what
+they don't want, so suggest anything she might like to remember, even when a line is only partly clear.
 {HEARD_NOTE}
 Return:
 - speakers: for each speaker label, who it is (a name or a role like "son", "doctor") in {config.FAMILY_LANG_NAME} and {config.PARENT_LANG_NAME}, and which one is the parent.
 - A short title and a 1-2 sentence summary, in {config.FAMILY_LANG_NAME} and in {config.PARENT_LANG_NAME}.
 - Up to {config.MAX_CARDS_PER_CONVERSATION} practice cards about details worth remembering: who they talked to, plans and dates,
-  instructions they were given, places, and things they promised. Skip small talk and the obvious.
+  instructions they were given, places, things they promised, festivals and greetings, and small details she might
+  enjoy remembering.
   - Questions are short (under 14 words), warm and spoken-style, addressed to the parent in {config.PARENT_LANG_NAME},
     using respectful forms (तपाईं, not तिमी, in Nepali). Name the day ("सोमबार", "on Monday") instead of
     saying "today": a question comes back days later.
@@ -127,12 +129,13 @@ Return:
   - health is true for anything about medicine, doses, symptoms or treatment. Those questions only ask what the person
     was told ("What did the doctor say about the new tablet?") and quote it as said. Never add advice.
   - importance: 3 for dates, appointments, medicine instructions and promises; 2 for people and plans; 1 for nice details.
-- Promises: concrete things someone said they will do, with the day if one was said (resolve weekdays against today's date).
-- Facts: at most 3 lasting facts about the parent's life that Bee should remember, written in the first person as the
+- Promises: concrete things someone said they will do, with the day if one was said (resolve weekdays against the conversation's date).
+- Facts: lasting facts about the parent's life that Bee should remember, written in the first person as the
   parent ("Kamala is my older sister; she lives in Kathmandu", "My doctor is Dr. Patel"): people and how they're related,
   regular routines, places they go. Not one-off events or plans. Skip anything already in "What Bee already knows".
 
-If the conversation has nothing worth practising (a TV in the background, a purchase at a till), return no cards.
+If the whole conversation is a TV or video playing, say so in the summary; you may still suggest cards about what she
+watched.
 Write every {config.PARENT_LANG_NAME} field in correct {config.PARENT_LANG_NAME}, never in the transcript's spellings."""
 
 TRANSLATE_SYSTEM = f"""You clean up and translate transcript lines from a family's conversations.
@@ -174,10 +177,11 @@ def build(conversation: dict, facts: list[str] | None = None) -> dict:
 
 
 def understand_prompt(conversation: dict, items: list[dict], facts: list[str] | None = None) -> str:
-    today = datetime.now(config.TZ)
     start = bee.to_ms(conversation.get("start_time"))
+    # The conversation's own day, not the day the digest runs: a sync can read yesterday's conversations.
+    day = datetime.fromtimestamp(start / 1000, config.TZ) if start else datetime.now(config.TZ)
     known = "\n".join(f"- {f}" for f in (facts or [])[:40]) or "(nothing yet)"
-    return (f"Today is {today:%A %Y-%m-%d}. The conversation started at {_clock(start)}.\n"
+    return (f"The conversation happened on {day:%A %Y-%m-%d}, starting at {_clock(start)}. Name that day in questions.\n"
             f"Bee's own summary (may be in English): {conversation.get('summary') or '(none)'}\n\n"
             f"What Bee already knows about the parent (facts they confirmed; use them to name speakers):\n{known}\n\n"
             f"Transcript ({len(items)} lines):\n{_numbered(items)}")
@@ -188,7 +192,8 @@ def translate_prompt(texts: list[str]) -> str:
 
 
 def understand(conversation: dict, items: list[dict], facts: list[str] | None = None) -> dict:
-    return llm.structured(UNDERSTAND_SYSTEM, understand_prompt(conversation, items, facts), UNDERSTAND_SCHEMA)
+    return llm.structured(UNDERSTAND_SYSTEM, understand_prompt(conversation, items, facts), UNDERSTAND_SCHEMA,
+                          max_tokens=32000)
 
 
 def translate_full(texts: list[str], effort: str | None = None) -> list[dict]:
@@ -197,7 +202,7 @@ def translate_full(texts: list[str], effort: str | None = None) -> list[dict]:
     if not texts:
         return []
     out = llm.structured(TRANSLATE_SYSTEM, translate_prompt(texts), TRANSLATE_SCHEMA,
-                         max_tokens=12000, effort=effort)
+                         max_tokens=24000, effort=effort)
     return lines_from(out, len(texts))
 
 
@@ -214,30 +219,34 @@ def translate(texts: list[str], effort: str | None = None) -> list[str]:
 
 
 def clean(data: dict, n_lines: int, source: str, known_facts: list[str] | None = None) -> dict:
-    """Clamp everything the model returned to what the transcript can back up."""
+    """Clamp everything the model returned to the transcript. Nothing worth asking is dropped: a card the transcript
+    can't back (no line, or only TV lines) gets a `check` reason and waits for the family's OK, like health cards."""
     lines = (list(data.get("lines_en") or []) + [""] * n_lines)[:n_lines]
     fixed = (list(data.get("lines_parent") or []) + [""] * n_lines)[:n_lines]
     background = {i for i in data.get("background") or [] if isinstance(i, int) and 0 <= i < n_lines}
 
+    def real(ev):  # line numbers that exist
+        return sorted({i for i in ev if isinstance(i, int) and 0 <= i < n_lines})
+
     def ok(ev):  # real line numbers, never the TV
-        return sorted({i for i in ev if isinstance(i, int) and 0 <= i < n_lines and i not in background})
+        return [i for i in real(ev) if i not in background]
 
     cards = []
     for c in data.get("cards", []):
-        c = dict(c, evidence=ok(c.get("evidence", [])))
-        c.setdefault("health", False)
-        if c["question_parent"].strip() and c["answer_parent"].strip() and c["evidence"]:
-            cards.append(c)
+        if not (c.get("question_parent") or "").strip() or not (c.get("answer_parent") or "").strip():
+            continue  # nothing to ask
+        ev = real(c.get("evidence", []))
+        check = ("No transcript line backs this answer." if not ev
+                 else "Only lines marked as TV or background back this answer." if not ok(ev) else "")
+        cards.append(dict(c, evidence=ok(ev) or ev, health=c.get("health", False), check=check))
     promises = [dict(p, evidence=ok(p.get("evidence", []))) for p in data.get("promises", [])
                 if (p.get("text_parent") or "").strip()]
     speakers = [s for s in data.get("speakers", []) if s.get("label")]
     known = {f.strip().lower() for f in known_facts or []}
     facts = [dict(f, evidence=ok(f.get("evidence", []))) for f in data.get("facts", [])
              if (f.get("text_en") or "").strip() and f["text_en"].strip().lower() not in known]
-    facts = [f for f in facts if f["evidence"]][:3]
     return {**data, "lines_en": lines, "lines_parent": fixed, "background": sorted(background),
-            "speakers": speakers, "facts": facts,
-            "cards": cards[: config.MAX_CARDS_PER_CONVERSATION], "promises": promises, "source": source}
+            "speakers": speakers, "facts": facts, "cards": cards, "promises": promises, "source": source}
 
 
 def _mock(conversation: dict, items: list[dict], facts: list[str] | None = None) -> dict:

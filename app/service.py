@@ -420,7 +420,7 @@ class MemoryLane:
         self.store.update_card(card_id, deleted=1)
 
     def approve_card(self, card_id: int) -> dict:
-        """A family member checked a health question against the transcript."""
+        """A family member checked a waiting question (health, or one the transcript can't back) and kept it."""
         card = self._card(card_id)
         self.store.update_card(card_id, status="active", due=min(card["due"], today()))
         return {"card_id": card_id, "status": "active"}
@@ -484,21 +484,18 @@ class MemoryLane:
                 "forgot": sum(r == "forgot" for r in results)}
 
     def outline(self, day: str | None = None) -> list[dict]:
-        """Tonight's conversations in order, for the day ribbon on the evening screen."""
+        """Tonight's conversations in order, for the day ribbon on the evening screen. Older questions
+        bring their own (earlier) conversations along, so the ribbon is never empty."""
         day = day or today()
-        plan = set(self.plan(day))
         convs = {}
-        for cid in plan:
+        for cid in self.plan(day):
             card = self.store.card(cid)
             if card:
-                convs.setdefault(card["conversation_id"], 0)
-                convs[card["conversation_id"]] += 1
-        out = []
-        for c in self.store.conversations(day):
-            if c["id"] in convs:
-                out.append({"conversation_id": c["id"], "time": clock(c["start_ms"]), "title": c["title_parent"],
-                            "title_en": c["title_en"], "questions": convs[c["id"]]})
-        return out
+                convs[card["conversation_id"]] = convs.get(card["conversation_id"], 0) + 1
+        rows = [c for c in (self.store.conversation(i) for i in convs) if c and c["status"] != "deleted"]
+        return [{"conversation_id": c["id"], "day": c["day"], "time": clock(c["start_ms"]), "title": c["title_parent"],
+                 "title_en": c["title_en"], "questions": convs[c["id"]]}
+                for c in sorted(rows, key=lambda c: c["start_ms"] or 0)]
 
     def next_card(self, day: str | None = None) -> dict | None:
         day = day or today()
@@ -560,10 +557,9 @@ class MemoryLane:
                 "next": self.next_card(day), "state": self.practice_state(day)}
 
     def reset_practice(self, day: str | None = None) -> dict:
-        """Undo tonight's answers and plan, e.g. to record the demo again."""
+        """Undo tonight's answers, e.g. to record the demo again. The same questions stay planned."""
         day = day or today()
         undone = self.store.undo_reviews(day)
-        self.store.delete_setting(f"plan:{day}")
         return {"undone": undone, "state": self.practice_state(day)}
 
     def _card(self, card_id: int) -> dict:

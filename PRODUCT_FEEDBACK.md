@@ -2,7 +2,7 @@
 
 Required for every tool, API or SDK used: what it was for, what worked well,
 what needs work, onboarding (zero to hello world), would we build with it
-again. Fill in the bracketed parts after the device test.
+again. Lines marked (check) are my wording of your opinion: change them if they're wrong.
 
 ## Bee (CLI, Developer Mode, live stream, facts, photos, todos)
 - **Used for:** reading her conversations and transcripts (`conversations list/get`), live lines and
@@ -23,9 +23,14 @@ again. Fill in the bracketed parts after the device test.
   - The Node library covers about half the CLI.
   - Developer Mode needs a paired device (the hackathon FAQ said otherwise).
   - No stated Node minimum.
-  - [Add: Nepali transcription quality from the device test.]
-- **Onboarding:** [Time from installing the app to the first `bee conversations list`.]
-- **Again?** [Yes/No and why.]
+  - Nepali: not in the language list. With Hindi selected, her Nepali comes out in Devanagari with Hindi spellings.
+    Bee kept 3–12% of her speech on her first day (Oct 19) and 15% on Oct 20, while English (a café order, the nail
+    salon) came through word for word. On Oct 20 every conversation had one speaker, "Unknown".
+- **Onboarding:** pair the watch, tap the app version 5 times for Developer Mode, `npm i -g @beeai/cli`,
+  `bee login`, then `bee conversations list`. Simple once paired; what cost us time was the FAQ's no-device line
+  and the unstated Node minimum (friction log #1 and #4).
+- **Again?** (check) Yes. It's the only device that heard her whole day. Nepali support and less dropped speech
+  would make it far better for families like ours.
 
 ## Alexa+ add-ons (MCP, spec 2025-11-25, Streamable HTTP)
 - **Used for:** serving the evening practice as MCP tools, with a `say` line in
@@ -40,11 +45,18 @@ again. Fill in the bracketed parts after the device test.
 ## Together AI (open models)
 - **Used for:** line-by-line translation and practice-card extraction with
   JSON-schema structured outputs; a fast model for the live feed.
-- [Fill in after real transcripts: which model won `./run.sh compare` on Nepali, and why.]
+- **Model:** `./run.sh compare` ran five models on her real Sunday conversation. Kimi K3 rebuilt her Nepali best,
+  DeepSeek V4 Pro was usable (it reads the live lines), GLM returned empty lines, and Qwen was refused on our
+  account (friction log #12).
+- **Worked well:** JSON-schema outputs held on long Nepali transcripts; one key, many open models.
+- **Needs work:** 429/503 errors with 5 calls in parallel, and long conversations ran out of tokens. We split
+  translation into 40-line chunks and ran 1–2 conversations at a time.
+- **Onboarding:** key in `.env`, OpenAI-style API, first answer in minutes.
+- **Again?** (check) Yes, for open models with structured output.
 
 ## AWS (Amazon Bedrock, for the AWS Builder add-on)
-- **Used for:** the same call through Claude on Bedrock (`LLM_PROVIDER=bedrock`), if we run it.
-- [Fill in: account setup, model access, quotas.]
+- Not used in the end. Our AWS Builder add-on is Kiro (below). A Bedrock path (`LLM_PROVIDER=bedrock`) is in
+  the code, tested only against a fake server.
 
 ## Kiro (AWS Builder add-on)
 - **Used for:** building the consent-and-control feature (a `/notice` card for visitors, pause, real delete) from a
@@ -62,10 +74,6 @@ again. Fill in the bracketed parts after the device test.
   human in headless mode.
 - **Would we use it again:** yes, for spec-first features with clear tasks. We'd want the throttle to pause and retry
   instead of failing the run.
-
-## Claude Code (coding assistant)
-- **Used for:** help with code, debugging and drafting docs. The idea, the product decisions and the testing with my
-  mom on her watch are mine.
 
 ## bee-cli-python (Open Source add-on)
 - A separate MIT repo: a Python client for the Bee CLI. It covers every data command (the bundled

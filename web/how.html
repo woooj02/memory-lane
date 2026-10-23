@@ -81,12 +81,12 @@ a{color:var(--marigold)}
       <h3 id="ai-name">The AI step</h3>
       <p>Translates every line into English, names the speakers using what Bee already knows, and picks what's worth remembering. Live: a fast model catches promises within seconds. Every answer follows a JSON schema.</p>
       <div class="calls"><code id="model">model</code></div>
-      <div class="nums"><div class="num" id="n-live">–<small>reminders set live</small></div><div class="num" id="n-skip">–<small>too short, skipped</small></div></div>
+      <div class="nums"><div class="num" id="n-live">–<small>reminders set live</small></div><div class="num" id="n-skip">–<small>waiting for family OK</small></div></div>
     </div>
     <div class="stage c-cards">
       <span class="step">3 · QUESTIONS</span>
       <h3>Grounded practice cards</h3>
-      <p>Up to 3 per conversation, each with a hint, an answer and the exact lines it came from, plus "who were you with?" from her photos. Health questions wait for family approval.</p>
+      <p>Suggested from every conversation, each with a hint, an answer and the exact lines it came from, plus "who were you with?" from her photos. Nothing is thrown away on its own: health questions, and any the transcript can't back, wait for the family to keep or remove them.</p>
       <div class="nums"><div class="num" id="n-cards">–<small>questions</small></div><div class="num" id="n-pending">–<small>waiting for OK</small></div></div>
     </div>
     <div class="stage c-eve">
@@ -118,7 +118,7 @@ a{color:var(--marigold)}
   <section class="box">
     <h2>Design choices</h2>
     <ul>
-      <li><b>Her words, not the model's.</b> Every question cites the transcript lines it came from, and the answer screen replays those lines. Cards without evidence are dropped.</li>
+      <li><b>Her words, not the model's.</b> Every question cites the transcript lines it came from, and the answer screen replays those lines. A question without evidence is never asked until the family checks it.</li>
       <li><b>Health waits for family.</b> Anything about medicine, doses or symptoms is only asked after a family member checks it against what the doctor said. The model never adds advice.</li>
       <li><b>Her language first.</b> Questions, hints and answers are in Nepali with respectful forms; English is for the family and is always shown beside the original.</li>
       <li><b>Private by default.</b> Any conversation can be kept private: no questions, nothing shown. With real data the server requires an access token.</li>
@@ -136,7 +136,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"
 const set = (id, v) => { const el = document.getElementById(id); el.firstChild.nodeValue = String(v); };
 async function stats(){
   const s = await (await fetch("/api/stats")).json();
-  set("n-lines", s.lines); set("n-conv", s.conversations); set("n-skip", s.skipped);
+  set("n-lines", s.lines); set("n-conv", s.conversations); set("n-skip", s.pending);
   set("n-cards", s.cards); set("n-live", s.live_reminders ?? 0); set("n-pending", s.pending); set("n-rev", s.reviews); set("n-rem", s.reminders);
   const AI = { together: "Together AI (open models)", bedrock: "Claude on Amazon Bedrock", anthropic: "Claude API", mock: "Offline sample digests" };
   document.getElementById("ai-name").textContent = AI[s.ai] || s.ai;

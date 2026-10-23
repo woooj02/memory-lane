@@ -48,7 +48,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 .stop .n{font-size:17px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .stop.done i{border-color:var(--leaf);color:var(--leaf);background:var(--leaf-soft)}
 .stop.now i{border-color:var(--marigold);background:var(--marigold);color:var(--marigold-ink);box-shadow:0 0 0 7px rgba(242,165,49,.25)}
-.stop.now .t,.stop.now .n{color:var(--ink)}
+.stop .e{font-size:15px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stop.now .t,.stop.now .n,.stop.now .e{color:var(--ink)}
 
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:min(10px,1.2vh) 0}
 .stage{width:min(1140px,100%);display:grid;gap:min(18px,2.1vh)}
@@ -154,14 +155,14 @@ const UI = {
     hello: (name, n) => `नमस्ते ${name}! आजको सम्झना अभ्यास: ${n} वटा प्रश्न।`,
     none: (name) => `नमस्ते ${name}! आज अभ्यास गर्ने कुरा छैन। भोलि फेरि भेटौँ।`,
     begin: "सुरु गरौँ", remember: "सम्झें", hint: "संकेत दिनुस्", forgot: "बिर्सें", nowRemember: "अब सम्झें",
-    next: "अर्को प्रश्न", finish: "सकियो", hintLabel: "संकेत", from: "आजको कुराकानीबाट", review: "दोहोर्‍याउने",
+    next: "अर्को प्रश्न", finish: "सकियो", hintLabel: "संकेत", from: "कुराकानीबाट", review: "दोहोर्‍याउने",
     done: "आजको अभ्यास सकियो", scoreTail: (h) => `वटा आफैं सम्झनुभयो${h ? `, ${ne(h)} वटा संकेतले` : ""}।`,
     promisesBtn: "तपाईंले भन्नुभएको कुरा", promisesTitle: "तपाईंले भन्नुभएको थियो", promisesAsk: "Bee मा सम्झाउने राखौँ?",
     remind: "Bee मा सम्झाउनुस्", reminded: "Bee मा राखियो ✓",
     praise: { remembered: "धेरै राम्रो!", hint: "सँगै सम्झियौँ।", forgot: "केही छैन, भोलि फेरि सोध्छु।" },
     tag: { remembered: "सम्झनुभयो", hint: "संकेतले", forgot: "भोलि फेरि" },
     today: "आज", tomorrow: "भोलि", oops: "केही मिलेन।",
-    foot: "आजका कुराकानीबाट प्रश्न · Bee", keys: "१ सम्झें · २ संकेत · ३ बिर्सें · N अर्को · R सुन्नुस्",
+    foot: "उहाँकै कुराकानीबाट प्रश्न · Bee", keys: "१ सम्झें · २ संकेत · ३ बिर्सें · N अर्को · R सुन्नुस्",
     pod: (h) => h < 12 ? "बिहान" : h < 17 ? "दिउँसो" : h < 20 ? "बेलुका" : "राति",
     week: ["आइतबार","सोमबार","मंगलबार","बुधबार","बिहीबार","शुक्रबार","शनिबार"],
     month: ["जनवरी","फेब्रुअरी","मार्च","अप्रिल","मे","जुन","जुलाई","अगस्ट","सेप्टेम्बर","अक्टोबर","नोभेम्बर","डिसेम्बर"],
@@ -172,14 +173,14 @@ const UI = {
     hello: (name, n) => `Good evening, ${name}! Tonight: ${n} questions from your day.`,
     none: (name) => `Good evening, ${name}! Nothing to practise tonight. See you tomorrow.`,
     begin: "Let's begin", remember: "I remember", hint: "Give me a hint", forgot: "I forgot", nowRemember: "Now I remember",
-    next: "Next question", finish: "Done", hintLabel: "Hint", from: "From today's conversation", review: "review",
+    next: "Next question", finish: "Done", hintLabel: "Hint", from: "From the conversation", review: "review",
     done: "Done for tonight", scoreTail: (h) => `remembered on your own${h ? `, ${h} with a hint` : ""}.`,
     promisesBtn: "Things you said you'd do", promisesTitle: "You said you would", promisesAsk: "Shall I add reminders in Bee?",
     remind: "Remind me in Bee", reminded: "Added to Bee ✓",
     praise: { remembered: "Well done!", hint: "We remembered it together.", forgot: "That's fine, I'll ask again tomorrow." },
     tag: { remembered: "remembered", hint: "with a hint", forgot: "tomorrow" },
     today: "Today", tomorrow: "Tomorrow", oops: "Something went wrong.",
-    foot: "Questions from today's conversations · Bee", keys: "1 remember · 2 hint · 3 forgot · N next · R listen",
+    foot: "Questions from her own conversations · Bee", keys: "1 remember · 2 hint · 3 forgot · N next · R listen",
     pod: (h) => h < 12 ? "Morning" : h < 17 ? "Afternoon" : h < 20 ? "Evening" : "Night",
     week: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
     month: ["January","February","March","April","May","June","July","August","September","October","November","December"],
@@ -202,6 +203,12 @@ const pick = (parentText, enText) => S.mode === "en" ? (enText || parentText) : 
 const subOf = (parentText, enText) => S.mode === "both" && enText && enText !== parentText ? enText : "";
 const sub = (parentText, enText) => { const t = subOf(parentText, enText); return t ? `<p class="sub">${esc(t)}</p>` : ""; };
 const name = () => S.mode === "en" ? S.parentNameEn : S.parentName;
+const both = (en) => S.mode === "both" && en ? ` <span class="sub" style="display:inline">· ${esc(en)}</span>` : "";   // English after a Nepali label
+function whenEn(hhmm){
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}
 
 function when(hhmm){
   if (!hhmm) return "";
@@ -209,6 +216,7 @@ function when(hhmm){
   const h12 = h % 12 || 12, mm = String(m).padStart(2, "0");
   return L().digits ? `${L().pod(h)} ${ne(h12)}:${ne(mm)}` : `${h12}:${mm} ${h < 12 ? "AM" : "PM"}`;
 }
+function isoToday(){ const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`; }
 function dayName(d){ return `${L().week[d.getDay()]}, ${L().month[d.getMonth()]} ${num(d.getDate())}`; }
 function relDate(iso){
   const d = new Date(iso + "T12:00");
@@ -225,7 +233,8 @@ function chrome(){
   document.documentElement.lang = S.mode === "en" ? "en" : S.parentLang;
   document.getElementById("brand").textContent = u.brand;
   document.getElementById("brand2").textContent = S.mode === "en" ? "सम्झना" : "Memory Lane";
-  document.getElementById("today").textContent = dayName(new Date());
+  const d = new Date();
+  document.getElementById("today").textContent = dayName(d) + (S.mode === "both" ? ` · ${UI.en.week[d.getDay()]}, ${UI.en.month[d.getMonth()]} ${d.getDate()}` : "");
   document.getElementById("foot1").textContent = u.foot;
   document.getElementById("foot2").textContent = u.keys;
   document.querySelectorAll("#langs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === S.mode));
@@ -239,7 +248,7 @@ function ribbon(currentConv){
     const done = currentConv === "done" || (!now && !passed);
     if (now) passed = true;
     return `<div class="stop${now ? " now" : ""}${done && !now ? " done" : ""}" title="${esc(c.title_en)}">
-      <i>${done && !now ? "✓" : num(i + 1)}</i><span class="t">${esc(when(c.time))}</span><span class="n">${esc(pick(c.title, c.title_en))}</span></div>`;
+      <i>${done && !now ? "✓" : num(i + 1)}</i><span class="t">${esc(c.day && c.day !== isoToday() ? `${L().week[new Date(c.day + "T12:00").getDay()]} ` : "")}${esc(when(c.time))}</span><span class="n">${esc(pick(c.title, c.title_en))}</span>${S.mode === "both" ? `<span class="e">${esc(c.day && c.day !== isoToday() ? UI.en.week[new Date(c.day + "T12:00").getDay()].slice(0, 3) + " " : "")}${esc(whenEn(c.time))} · ${esc(c.title_en)}</span>` : ""}</div>`;
   }).join("");
 }
 function dots(current){
@@ -306,7 +315,7 @@ function viewStart(){
   const line = ready ? u.hello(name(), num(S.state.total)) : u.none(name());
   S.say = line;
   stage.innerHTML = `
-    <p class="kicker">${esc(u.practice)}</p>
+    <p class="kicker">${esc(u.practice)}${both(UI.en.practice)}</p>
     <h1 class="q">${esc(line)}</h1>
     ${sub(line, ready ? UI.en.hello(S.parentNameEn, S.state.total) : UI.en.none(S.parentNameEn))}
     ${ready ? `<div class="row"><button class="btn go" id="begin">${esc(u.begin)}${S.mode === "both" ? `<small>${UI.en.begin}</small>` : ""}<kbd>N</kbd></button></div>` : ""}`;
@@ -320,7 +329,7 @@ function viewQuestion(){
   const q = pick(c.question, c.question_en);
   S.say = q;
   stage.innerHTML = `
-    <p class="kicker">${esc(when(c.when))} · ${esc(pick(c.about, c.about_en))}${c.review ? ` <span class="tag">${esc(u.review)}</span>` : ""}${c.voice ? ` <span class="tag" title="Recorded by the family">🎙</span>` : ""}</p>
+    <p class="kicker">${esc(when(c.when))} · ${esc(pick(c.about, c.about_en))}${both(c.about_en && `${whenEn(c.when)} · ${c.about_en}`)}${c.review ? ` <span class="tag">${esc(u.review)}</span>` : ""}${c.voice ? ` <span class="tag" title="Recorded by the family">🎙</span>` : ""}</p>
     ${withPhoto(c, `<h1 class="q">${esc(q)}</h1>${sub(c.question, c.question_en)}`)}
     <div class="row">
       <button class="btn yes" data-a="remembered">${esc(u.remember)}${S.mode === "both" ? `<small>${UI.en.remember}</small>` : ""}<kbd>1</kbd></button>
@@ -337,7 +346,7 @@ function viewHint(){
   const ht = pick(h.hint, h.hint_en);
   S.say = ht;
   stage.innerHTML = `
-    <p class="kicker">${esc(u.hintLabel)}</p>
+    <p class="kicker">${esc(u.hintLabel)}${both(UI.en.hintLabel)}</p>
     ${withPhoto(c, `<h1 class="q">${esc(pick(c.question, c.question_en))}</h1>${sub(c.question, c.question_en)}
     <p class="hint">${esc(ht)}</p>${sub(h.hint, h.hint_en)}`)}
     <div class="row">
@@ -356,15 +365,15 @@ function viewAnswer(){
   const quotes = (a.evidence || []).slice(0, 2).map((q) => {
     const main = S.mode === "en" && q.en ? q.en : q.text;
     const second = S.mode === "en" ? (q.en && q.en !== q.text ? q.text : "") : (S.mode === "both" && q.en !== q.text ? q.en : "");
-    return `<div class="quote"><span class="who">${esc(when(q.at))} · ${esc(S.mode === "en" ? q.name_en : q.name)}</span>
+    return `<div class="quote"><span class="who">${esc(when(q.at))} · ${esc(S.mode === "en" ? q.name_en : q.name)}${S.mode === "both" && q.name_en ? ` · ${esc(q.name_en)}` : ""}</span>
       <span class="text">“${esc(main)}”</span>${second ? `<span class="tr">${esc(second)}</span>` : ""}</div>`;
   }).join("");
   const last = !rec.next;
   stage.innerHTML = `
     <p class="kicker">${esc(u.praise[r])}${S.mode === "both" ? ` <span class="sub" style="display:inline">· ${UI.en.praise[r]}</span>` : ""}</p>
-    <h1 class="q" style="font-size:clamp(26px,min(3.5vw,5vh),44px);color:var(--muted)">${esc(pick(c.question, c.question_en))}</h1>
+    <h1 class="q" style="font-size:clamp(26px,min(3.5vw,5vh),44px);color:var(--muted)">${esc(pick(c.question, c.question_en))}</h1>${subOf(c.question, c.question_en) ? `<p class="sub" style="font-size:clamp(19px,min(2.4vw,3.2vh),26px)">${esc(c.question_en)}</p>` : ""}
     ${withPhoto(c, `<p class="answer${r === "remembered" ? " yes" : ""}">${esc(ans)}</p>${sub(a.answer, a.answer_en)}`, true)}
-    ${quotes ? `<div class="source"><h3>${esc(u.from)}</h3>${quotes}</div>` : ""}
+    ${quotes ? `<div class="source"><h3>${esc(u.from)}${S.mode === "both" ? ` · ${esc(UI.en.from)}` : ""}</h3>${quotes}</div>` : ""}
     <div class="row"><button class="btn go" id="next">${esc(last ? u.finish : u.next)}${S.mode === "both" ? `<small>${last ? UI.en.finish : UI.en.next}</small>` : ""}<kbd>N</kbd></button></div>`;
   const go = () => { if (last) { S.view = "done"; loadDone(); } else { S.card = rec.next; S.view = "question"; render(); } };
   document.getElementById("next").onclick = go;

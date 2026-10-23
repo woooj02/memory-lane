@@ -124,6 +124,7 @@ tr.hl td{background:var(--hi)}
 .pause-status{font-size:16px;color:var(--muted);margin:0}
 .pause-status.active{color:var(--rhodo);font-weight:600}
 .del-confirm{background:var(--rhodo-soft);border:1px solid var(--rhodo);border-radius:10px;padding:10px 14px;display:grid;gap:6px;font-size:16px}
+.del-confirm[hidden]{display:none}
 .del-confirm p{margin:0;color:var(--rhodo);font-weight:600}
 .del-confirm small{color:var(--muted);font-size:14px}
 </style>
@@ -271,7 +272,7 @@ function convHTML(c){
       ${k.media && k.media.photo ? `<img class="thumb" src="/media/photos/${esc(k.media.photo)}" alt="Photo from her phone">` : ""}
       <span class="q">${esc(k.question_en)}</span><span class="ne">${esc(k.question_parent)}</span>
       <span class="a">→ <b>${esc(k.answer_en)}</b> <span class="ne">· ${esc(k.answer_parent)}</span></span>
-      <span class="meta"><span class="lines">${esc(KIND[k.kind] || k.kind)}${k.health ? " · health" : ""}${k.status === "pending" ? " · waiting for your OK" : ` · next asked ${esc(k.due)}`} · from
+      <span class="meta"><span class="lines">${esc(KIND[k.kind] || k.kind)}${k.health ? " · health" : ""}${k.check_reason ? " · check" : ""}${k.status === "pending" ? " · waiting for your OK" : ` · next asked ${esc(k.due)}`} · from
         ${k.evidence.map((i) => `<button class="lineref" data-conv="${c.id}" data-line="${i}" title="Show this line">line ${i}</button>`).join("")}</span>
         <button class="linkish" data-del="${k.id}">Remove</button></span>
       <span class="voicebar">${k.voice ? `<audio controls preload="none" src="/media/voice/${esc(k.voice)}"></audio><button class="linkish" data-unvoice="${k.id}">Remove recording</button>`
@@ -303,13 +304,24 @@ function convHTML(c){
   </article>`;
 }
 
+// ?day=YYYY-MM-DD shows an earlier day; ← and → step through the days.
+const DAY = (new URLSearchParams(location.search).get("day") || "").match(/^\d{4}-\d{2}-\d{2}$/)?.[0] || "";
+function shiftDay(day, n){
+  const d = new Date(day + "T12:00"); d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 async function loadDay(){
-  dayData = await api("/api/day");
+  dayData = await api(DAY ? `/api/day?day=${DAY}` : "/api/day");
   const dt = new Date(dayData.day + "T12:00");
-  document.getElementById("dayh").innerHTML = `Today <small>${dt.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric"})} · ${dayData.conversations.length} conversations</small>`;
+  const isToday = dayData.day === health.today;
+  const q = (d) => d === health.today ? location.pathname : `?day=${d}`;
+  const next = isToday ? "" : `<a class="linkish" href="${q(shiftDay(dayData.day, 1))}" title="Next day">→</a>`;
+  document.getElementById("dayh").innerHTML = `<a class="linkish" href="${q(shiftDay(dayData.day, -1))}" title="Previous day">←</a>
+    ${isToday ? "Today" : dt.toLocaleDateString([], {weekday:"long"})} ${next}
+    <small>${dt.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric"})} · ${dayData.conversations.length} conversations</small>`;
   const box = document.getElementById("day");
   box.innerHTML = dayData.conversations.length ? dayData.conversations.map(convHTML).join("")
-    : `<p class="empty">Nothing yet today. Conversations appear after they end; press “Sync from Bee” to check now.</p>`;
+    : `<p class="empty">${isToday ? "Nothing yet today. Conversations appear after they end; press “Sync from Bee” to check now." : "No conversations that day."}</p>`;
 }
 
 async function loadPending(){
@@ -317,18 +329,24 @@ async function loadPending(){
   const box = document.getElementById("pending");
   box.hidden = !cards.length;
   if (!cards.length) return;
+  // Waiting questions can come from any day; load the other days' transcripts for their quotes.
+  const convs = new Map((dayData ? dayData.conversations : []).map((x) => [x.id, x]));
+  const days = [...new Set(cards.filter((k) => !convs.has(k.conversation_id) && k.day).map((k) => k.day))];
+  for (const d of await Promise.all(days.map((d) => api(`/api/day?day=${d}`))))
+    d.conversations.forEach((x) => convs.set(x.id, x));
   const items = cards.map((k) => {
-    const c = dayData && dayData.conversations.find((x) => x.id === k.conversation_id);
+    const c = convs.get(k.conversation_id);
     const quotes = c ? k.evidence.map((i) => c.lines[i]).filter(Boolean).map((l) => `<div class="quote">
         <span class="who">${esc(l.at)} · ${esc(l.name || l.speaker)}</span><span lang="ne">${esc(l.text)}</span>${heardHTML(l)}${l.en && l.en !== l.text ? `<span class="tr">${esc(l.en)}</span>` : ""}</div>`).join("") : "";
     return `<div class="item">
       <div><b>${esc(k.question_en)}</b> <span class="ne" style="color:var(--muted)">· ${esc(k.question_parent)}</span></div>
       <div>Answer she'll hear: <b>${esc(k.answer_en)}</b> <span style="color:var(--muted)">· ${esc(k.answer_parent)}</span></div>
+      ${k.check_reason ? `<div><span class="badge">Check: ${esc(k.check_reason)}</span></div>` : ""}
       <div class="quotes">${quotes}</div>
-      <div class="bar"><button class="btn small" data-approve="${k.id}">Approve</button><button class="btn danger small" data-del="${k.id}">Remove</button>
+      <div class="bar"><button class="btn small" data-approve="${k.id}">Keep</button><button class="btn danger small" data-del="${k.id}">Remove</button>
         <span class="chip">${esc(k.when)} · ${esc(k.title_en)}</span></div></div>`;
   }).join("");
-  box.innerHTML = `<h2>Waiting for your OK · ${cards.length}</h2><p class="empty" style="margin-top:-6px">Questions about health are only asked after someone in the family checks them against what was said.</p>${items}`;
+  box.innerHTML = `<h2>Waiting for your OK · ${cards.length}</h2><p class="empty" style="margin-top:-6px">Nothing is thrown away on its own. Questions about health, and questions the transcript can't back up, are only asked after someone in the family checks them. Keep or remove each one.</p>${items}`;
 }
 
 async function loadSide(){

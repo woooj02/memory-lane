@@ -72,9 +72,9 @@ def llm_provider() -> str:
 
 # Practice settings.
 SESSION_SIZE = int(_env("SESSION_SIZE", "6"))        # questions per evening
-MIN_WORDS = int(_env("MIN_WORDS", "25"))             # skip conversations shorter than this
+MIN_WORDS = int(_env("MIN_WORDS", "1"))              # skip conversations shorter than this (1: only empty ones)
 LOOKBACK_DAYS = int(_env("LOOKBACK_DAYS", "2"))      # how far back a sync reads
-MAX_CARDS_PER_CONVERSATION = int(_env("MAX_CARDS", "3"))
+MAX_CARDS_PER_CONVERSATION = int(_env("MAX_CARDS", "8"))  # suggestions; the family removes what it doesn't want
 
 # MCP over Streamable HTTP. Behind nginx the Host header is the public name,
 # so list it here (comma separated) or the SDK's DNS-rebinding guard rejects it.
